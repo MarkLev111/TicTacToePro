@@ -61,6 +61,7 @@ namespace TicTacToePro
         }
 
         public bool CheckWinField(int row, int column) // проверяет, что поле не пустое + что символы Х/О равны
+        // ПЕРЕПРОВЕРИТЬ ЗДЕСЬ ВООБЩЕ ВСЁ, ОЧЕНЬ МНОГО БАГОВ
         {
             switch (row)
             {

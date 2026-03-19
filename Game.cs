@@ -32,7 +32,7 @@ namespace TicTacToePro
             if (this.field[row, column] != '\0') // маленькое поле занято
                 return;
 
-            if (this.bigField[bigFieldPos / 10, bigFieldPos % 10] != null) // большое поле закрыто
+            if (this.bigField[bigFieldPos / 10, bigFieldPos % 10] != '\0') // большое поле закрыто
                 return;
 
             MakeAMove(row, column);

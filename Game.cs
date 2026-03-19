@@ -99,7 +99,7 @@ namespace TicTacToePro
                             else if (this.field[row + 1, column - 1] == this.field[row, column] && this.field[row - 1, column + 1] == this.field[row, column]) return true;
                             else return false;
                         case 2: case 5: case 8:
-                            if (this.field[row, column - 1] == this.field[row, column] && this.field[row, column + 1] == this.field[row, column]) return true;
+                            if (this.field[row, column - 1] == this.field[row, column] && this.field[row, column - 2] == this.field[row, column]) return true;
                             else if (this.field[row, column] == this.field[row - 1, column] && this.field[row + 1, column] == this.field[row, column]) return true;
                             else return false;
                         default:

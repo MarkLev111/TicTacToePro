@@ -63,6 +63,9 @@ namespace TicTacToePro
             if (result == '-')
                 return;
 
+            // Обновляем интерфейс после хода
+            UpdateUI();
+
             if (result == 'X' || result == 'O' || result == 'N')
             {
                 GameResultWindow endGame = new GameResultWindow();
@@ -74,9 +77,6 @@ namespace TicTacToePro
                     UpdateUI();
                 }
             }
-
-            // Обновляем интерфейс после хода
-            UpdateUI();
         }
 
         // Синхронизация интерфейса с данными из класса Game

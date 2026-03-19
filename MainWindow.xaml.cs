@@ -60,8 +60,9 @@ namespace TicTacToePro
 
             // Передаем ход в класс логики
             char result = game.Move(row, col);
-            if (result == '-')
-                return;
+            //if (result == '-')
+            //    return;
+            // почему-то был один баг, когда клетка была заполнена
 
             if (result == 'X' || result == 'O' || result == 'N')
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Controls;
+using System.Windows.Navigation;
 
 namespace TicTacToePro
 {
@@ -22,34 +23,41 @@ namespace TicTacToePro
             this.nextMove = -1; // -1 = в любое
         }
 
-        public void Move(int row, int column)
+        public char Move(int row, int column)
         {
             int bigFieldPos = BigFieldPos(row, column); // то, в какую большую клетку поставили только что
 
-            if (this.nextMove != -1 && this.nextMove != bigFieldPos)
-                return;
+            if (this.nextMove != -1 && this.nextMove != bigFieldPos) // неправильная клетка -
+                return '-';
 
-            if (this.field[row, column] != '\0') // маленькое поле занято
-                return;
+            if (this.field[row, column] != '\0') // маленькое поле занято -
+                return '-';
 
-            if (this.bigField[bigFieldPos / 10, bigFieldPos % 10] != '\0') // большое поле закрыто
-                return;
+            if (this.bigField[bigFieldPos / 10, bigFieldPos % 10] != '\0') // большое поле закрыто -
+                return '-';
 
             MakeAMove(row, column);
 
             bool smallField = CheckWinField(row, column);
-            if (smallField == true)
+            if (smallField)
             {
                 this.fieldsClosed++;
                 this.bigField[bigFieldPos / 10, bigFieldPos % 10] = field[row, column]; // тот же char
                 bool gameResult = CheckWinGame();
 
-                // ПРОДУМАТЬ ОКОНЧАНИЕ ИГРЫ И НИЧЬЮ
+                if (gameResult) // есть победитель игры
+                    return this.bigField[bigFieldPos / 10, bigFieldPos % 10];
             }
+
+            bool bigfieldClosed = CheckFieldClosed(bigFieldPos);
+            if (bigfieldClosed && this.fieldsClosed == 9)
+                return 'N'; // ничья
+            // Ничья на любой единичной клетке вообще нам не нужна, она выходит из игры фактически
 
             XO = !XO;
 
-            NextMove(row, column, bigFieldPos, smallField);
+            NextMove(row, column);
+            return '.'; // ИГРАЕМ ДАЛЬШЕ
         }
 
         public bool CheckWinField(int row, int column) // проверяет, что поле не пустое + что символы Х/О равны
@@ -69,7 +77,7 @@ namespace TicTacToePro
                             else if (this.field[row, column] != '\0' && this.field[row + 1, column] == this.field[row, column] && this.field[row + 2, column] == this.field[row, column]) return true;
                             else return false;
                         case 2: case 5: case 8:
-                            if (this.field[row, column - 2] != '\0' && this.field[row, column - 1] == this.field[row, column] && this.field[row, column] == this.field[row, column]) return true;
+                            if (this.field[row, column - 2] != '\0' && this.field[row, column - 2] == this.field[row, column - 1] && this.field[row, column - 1] == this.field[row, column]) return true;
                             else if (this.field[row, column] != '\0' && this.field[row + 1, column] == this.field[row, column] && this.field[row + 2, column] == this.field[row, column]) return true;
                             else if (this.field[row, column] != '\0' && this.field[row + 1, column - 1] == this.field[row, column] && this.field[row + 2, column - 2] == this.field[row, column]) return true;
                             else return false;
@@ -109,8 +117,8 @@ namespace TicTacToePro
                             else if (this.field[row, column] != '\0' && this.field[row - 2, column] == this.field[row, column] && this.field[row - 1, column] == this.field[row, column]) return true;
                             else return false;
                         case 2: case 5: case 8:
-                            if (this.field[row, column - 2] != '\0' && this.field[row, column - 1] == this.field[row, column] && this.field[row, column] == this.field[row, column]) return true;
-                            else if (this.field[row, column] != '\0' && this.field[row - 1, column] == this.field[row, column] && this.field[row + 1, column] == this.field[row, column]) return true;
+                            if (this.field[row, column - 2] != '\0' && this.field[row, column - 1] == this.field[row, column] && this.field[row, column] == this.field[row, column - 2]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row - 1, column] == this.field[row, column] && this.field[row - 2, column] == this.field[row, column]) return true;
                             else if (this.field[row, column] != '\0' && this.field[row - 1, column - 1] == this.field[row, column] && this.field[row - 2, column - 2] == this.field[row, column]) return true;
                             else return false;
                         default:
@@ -121,7 +129,32 @@ namespace TicTacToePro
             }
         }
 
-        public bool CheckWinGame()
+        public bool CheckFieldClosed(int bigFieldPos) // если в большой клетке получилась ничья (ранее победа дала false)
+        {
+            int row = 0;
+            int column = 0;
+            switch(bigFieldPos)
+            {
+                case 1: column += 3; goto default;
+                case 2: column += 6; goto default;
+                case 10: row += 3; goto default;
+                case 11: row += 3; column += 3; goto default;
+                case 12: row += 3; column += 6; goto default;
+                case 20: row += 6; goto default;
+                case 21: row += 6; column += 3; goto default;
+                case 22: row += 6; column += 6; goto default;
+
+                case 0:
+                default:
+                    for (int i = 0; i < 3; i++)
+                        for (int j = 0; j < 3; j++)
+                            if (this.field[row + i, column + j] == '\0')
+                                return false;
+                    return true;
+            }
+        }
+
+        public bool CheckWinGame() // все варианты закончить игру чёткой победой
         {
             return (this.bigField[0, 0] != '\0' && this.bigField[0, 0] == this.bigField[0, 1] && this.bigField[0, 1] == this.bigField[0, 2]) ||
                    (this.bigField[1, 0] != '\0' && this.bigField[1, 0] == this.bigField[1, 1] && this.bigField[1, 1] == this.bigField[1, 2]) ||
@@ -225,15 +258,15 @@ namespace TicTacToePro
             }
         }
 
-        public void NextMove(int row, int column, int bigFieldPos, bool smallField)
+        public void NextMove(int row, int column)
         {
             int nextMoveSupposed = NextMovePos(row * 10 + column);
-            if (this.bigField[nextMoveSupposed / 10, nextMoveSupposed % 10] == '\0')
+            if (!CheckFieldClosed(nextMoveSupposed))
             {
                 this.nextMove = nextMoveSupposed;
                 return;
             }
-            if (!smallField)
+            if (!CheckFieldClosed(this.nextMove))
                 return;
             else
                 this.nextMove = -1;

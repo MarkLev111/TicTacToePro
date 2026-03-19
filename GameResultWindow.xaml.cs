@@ -13,5 +13,20 @@ namespace TicTacToePro
         {
             this.DialogResult = true;
         }
+
+        public string WinnerText(char winner)
+        {
+            switch (winner)
+            {
+                case 'X':
+                    return "Победили крестики!";
+                case 'O':
+                    return "Победили нолики!";
+                case 'N':
+                    return "Ничья!";
+                default:
+                    throw new ArgumentOutOfRangeException("Такого результата игры нет");
+            }
+        }
     }
 }

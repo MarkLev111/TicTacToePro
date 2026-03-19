@@ -59,7 +59,21 @@ namespace TicTacToePro
             int col = pos.Item2;
 
             // Передаем ход в класс логики
-            game.Move(row, col);
+            char result = game.Move(row, col);
+            if (result == '-')
+                return;
+
+            if (result == 'X' || result == 'O' || result == 'N')
+            {
+                GameResultWindow endGame = new GameResultWindow();
+                endGame.ResultText.Text = endGame.WinnerText(result);
+
+                if (endGame.ShowDialog() == true)
+                {
+                    game = new Game();
+                    UpdateUI();
+                }
+            }
 
             // Обновляем интерфейс после хода
             UpdateUI();

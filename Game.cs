@@ -44,7 +44,7 @@ namespace TicTacToePro
                 this.bigField[bigFieldPos / 10, bigFieldPos % 10] = field[row, column]; // тот же char
                 bool gameResult = CheckWinGame();
 
-                // ПРОДУМАТЬ ОКОНЧАНИЕ ИГРЫ
+                // ПРОДУМАТЬ ОКОНЧАНИЕ ИГРЫ И НИЧЬЮ
             }
 
             XO = !XO;
@@ -106,7 +106,7 @@ namespace TicTacToePro
                             else return false;
                         case 1: case 4: case 7:
                             if (this.field[row, column - 1] != '\0' && this.field[row, column] == this.field[row, column - 1] && this.field[row, column + 1] == this.field[row, column]) return true;
-                            else if (this.field[row, column] != '\0' && this.field[row - 1, column] == this.field[row, column] && this.field[row + 1, column] == this.field[row, column]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row - 2, column] == this.field[row, column] && this.field[row - 1, column] == this.field[row, column]) return true;
                             else return false;
                         case 2: case 5: case 8:
                             if (this.field[row, column - 2] != '\0' && this.field[row, column - 1] == this.field[row, column] && this.field[row, column] == this.field[row, column]) return true;

@@ -8,50 +8,51 @@ namespace TicTacToePro
     class Game
     {
         public bool XO { get; set; } // true - X, false — O
-        public bool[,] field { get; set; }
-        public bool[,] bigField { get; set; }
+        public char[,] field { get; set; }
+        public char[,] bigField { get; set; }
         private int fieldsClosed { get; set; }
         public int nextMove { get; set; }
 
         public Game()
         {
             this.XO = true;
-            this.field = new bool[9, 9];
-            this.bigField = new bool[3, 3];
+            this.field = new char[9, 9];
+            this.bigField = new char[3, 3];
             this.fieldsClosed = 0;
-            this.nextMove = -1;
+            this.nextMove = -1; // -1 = в любое
         }
 
-        public void MakeMove(int row, int column)
+        public void Move(int row, int column)
         {
             int bigFieldPos = BigFieldPos(row, column); // то, в какую большую клетку поставили только что
 
-            if (this.nextMove != bigFieldPos)
+            if (this.nextMove != -1 && this.nextMove != bigFieldPos)
                 return;
 
-            if (field[row, column] != null) // маленькое поле занято
+            if (this.field[row, column] != '\0') // маленькое поле занято
                 return;
 
-            if (bigField[bigFieldPos / 10, bigFieldPos % 10] != null) // большое поле закрыто
+            if (this.bigField[bigFieldPos / 10, bigFieldPos % 10] != null) // большое поле закрыто
                 return;
 
-            field[row, column] = XO;
+            MakeAMove(row, column);
 
             bool smallField = CheckWinField(row, column);
             if (smallField == true)
             {
                 this.fieldsClosed++;
-                bigField[bigFieldPos / 10, bigFieldPos % 10] = XO;
+                this.bigField[bigFieldPos / 10, bigFieldPos % 10] = field[row, column]; // тот же char
                 bool gameResult = CheckWinGame();
 
                 // ПРОДУМАТЬ ОКОНЧАНИЕ ИГРЫ
             }
 
             XO = !XO;
-            this.nextMove = NextMovePos(row * 10 + column);
+
+            NextMove(row, column, bigFieldPos);
         }
 
-        public bool CheckWinField(int row, int column)
+        public bool CheckWinField(int row, int column) // проверяет, что поле не пустое + что символы Х/О равны
         {
             switch (row)
             {
@@ -59,18 +60,18 @@ namespace TicTacToePro
                     switch (column)
                     {
                         case 0: case 3: case 6:
-                            if (field[row, column] == field[row, column + 1] == field[row, column + 2]) return true;
-                            else if (field[row, column] == field[row + 1, column] == field[row + 2, column]) return true;
-                            else if (field[row, column] == field[row + 1, column + 1] == field[row + 2, column + 2]) return true;
+                            if (this.field[row, column] != '\0' && this.field[row, column + 1] == this.field[row, column] && this.field[row, column + 2] == this.field[row, column]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row + 1, column] == this.field[row, column] && this.field[row + 2, column] == this.field[row, column]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row + 1, column + 1] == this.field[row, column] && this.field[row + 2, column + 2] == this.field[row, column]) return true;
                             else return false;
                         case 1: case 4: case 7:
-                            if (field[row, column - 1] == field[row, column] == field[row, column + 1]) return true;
-                            else if (field[row, column] == field[row + 1, column] == field[row + 2, column]) return true;
+                            if (this.field[row, column - 1] != '\0' && this.field[row, column] == this.field[row, column - 1] && this.field[row, column + 1] == this.field[row, column]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row + 1, column] == this.field[row, column] && this.field[row + 2, column] == this.field[row, column]) return true;
                             else return false;
                         case 2: case 5: case 8:
-                            if (field[row, column - 2] == field[row, column - 1] == field[row, column]) return true;
-                            else if (field[row, column] == field[row + 1, column] == field[row + 2, column]) return true;
-                            else if (field[row, column] == field[row + 1, column - 1] == field[row + 2, column - 2]) return true;
+                            if (this.field[row, column - 2] != '\0' && this.field[row, column - 1] == this.field[row, column] && this.field[row, column] == this.field[row, column]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row + 1, column] == this.field[row, column] && this.field[row + 2, column] == this.field[row, column]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row + 1, column - 1] == this.field[row, column] && this.field[row + 2, column - 2] == this.field[row, column]) return true;
                             else return false;
                         default:
                             throw new ArgumentOutOfRangeException($"Поля со столбцом {column} нет!");
@@ -79,18 +80,18 @@ namespace TicTacToePro
                     switch (column)
                     {
                         case 0: case 3: case 6:
-                            if (field[row, column] == field[row, column + 1] == field[row, column + 2]) return true;
-                            else if (field[row - 1, column] == field[row, column] == field[row + 1, column]) return true;
+                            if (this.field[row, column] != '\0' && this.field[row, column + 1] == this.field[row, column] && this.field[row, column + 2] == this.field[row, column]) return true;
+                            else if (this.field[row - 1, column] != '\0' && this.field[row, column] == this.field[row - 1, column] && this.field[row + 1, column] == this.field[row, column]) return true;
                             else return false;
                         case 1: case 4: case 7:
-                            if (field[row, column - 1] == field[row, column] == field[row, column + 1]) return true;
-                            else if (field[row - 1, column] == field[row, column] == field[row + 1, column]) return true;
-                            else if (field[row - 1, column - 1] == field[row, column] == field[row + 1, column + 1]) return true;
-                            else if (field[row + 1, column - 1] == field[row, column] == field[row - 1, column + 1]) return true;
+                            if (this.field[row, column - 1] != '\0' && this.field[row, column] == this.field[row, column - 1] && this.field[row, column + 1] == this.field[row, column]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row - 1, column] == this.field[row, column] && this.field[row + 1, column] == this.field[row, column]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row - 1, column - 1] == this.field[row, column] && this.field[row + 1, column + 1] == this.field[row, column]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row + 1, column - 1] == this.field[row, column] && this.field[row - 1, column + 1] == this.field[row, column]) return true;
                             else return false;
                         case 2: case 5: case 8:
-                            if (field[row, column - 2] == field[row, column - 1] == field[row, column]) return true;
-                            else if (field[row - 1, column] == field[row, column] == field[row + 1, column]) return true;
+                            if (this.field[row, column - 2] != '\0' && this.field[row, column - 1] == this.field[row, column] && this.field[row, column] == this.field[row, column]) return true;
+                            else if (this.field[row - 1, column] != '\0' && this.field[row, column] == this.field[row - 1, column] && this.field[row + 1, column] == this.field[row, column]) return true;
                             else return false;
                         default:
                             throw new ArgumentOutOfRangeException($"Поля со столбцом {column} нет!");
@@ -99,18 +100,18 @@ namespace TicTacToePro
                     switch (column)
                     {
                         case 0: case 3: case 6:
-                            if (field[row, column] == field[row, column + 1] == field[row, column + 2]) return true;
-                            else if (field[row, column] == field[row - 1, column] == field[row - 2, column]) return true;
-                            else if (field[row, column] == field[row - 1, column + 1] == field[row - 2, column + 2]) return true;
+                            if (this.field[row, column] != '\0' && this.field[row, column + 1] == this.field[row, column] && this.field[row, column + 2] == this.field[row, column]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row - 1, column] == this.field[row, column] && this.field[row - 2, column] == this.field[row, column]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row - 1, column + 1] == this.field[row, column] && this.field[row - 2, column + 2] == this.field[row, column]) return true;
                             else return false;
                         case 1: case 4: case 7:
-                            if (field[row, column - 1] == field[row, column] == field[row, column + 1]) return true;
-                            else if (field[row, column] == field[row - 1, column] == field[row - 2, column]) return true;
+                            if (this.field[row, column - 1] != '\0' && this.field[row, column] == this.field[row, column - 1] && this.field[row, column + 1] == this.field[row, column]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row - 1, column] == this.field[row, column] && this.field[row + 1, column] == this.field[row, column]) return true;
                             else return false;
                         case 2: case 5: case 8:
-                            if (field[row, column - 2] == field[row, column - 1] == field[row, column]) return true;
-                            else if (field[row, column] == field[row - 1, column] == field[row - 2, column]) return true;
-                            else if (field[row, column] == field[row - 1, column - 1] == field[row - 2, column - 2]) return true;
+                            if (this.field[row, column - 2] != '\0' && this.field[row, column - 1] == this.field[row, column] && this.field[row, column] == this.field[row, column]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row - 1, column] == this.field[row, column] && this.field[row + 1, column] == this.field[row, column]) return true;
+                            else if (this.field[row, column] != '\0' && this.field[row - 1, column - 1] == this.field[row, column] && this.field[row - 2, column - 2] == this.field[row, column]) return true;
                             else return false;
                         default:
                             throw new ArgumentOutOfRangeException($"Поля со столбцом {column} нет!");
@@ -122,14 +123,14 @@ namespace TicTacToePro
 
         public bool CheckWinGame()
         {
-            return (bigField[0, 0] == bigField[0, 1] == bigField[0, 2]) ||
-                   (bigField[1, 0] == bigField[1, 1] == bigField[1, 2]) ||
-                   (bigField[2, 0] == bigField[2, 1] == bigField[2, 2]) ||
-                   (bigField[0, 0] == bigField[1, 1] == bigField[2, 2]) ||
-                   (bigField[2, 0] == bigField[1, 1] == bigField[0, 2]) ||
-                   (bigField[0, 0] == bigField[1, 0] == bigField[2, 0]) ||
-                   (bigField[0, 1] == bigField[1, 1] == bigField[2, 1]) ||
-                   (bigField[0, 2] == bigField[1, 2] == bigField[2, 2]);
+            return (this.bigField[0, 0] != '\0' && this.bigField[0, 0] == this.bigField[0, 1] && this.bigField[0, 1] == this.bigField[0, 2]) ||
+                   (this.bigField[1, 0] != '\0' && this.bigField[1, 0] == this.bigField[1, 1] && this.bigField[1, 1] == this.bigField[1, 2]) ||
+                   (this.bigField[2, 0] != '\0' && this.bigField[2, 0] == this.bigField[2, 1] && this.bigField[2, 1] == this.bigField[2, 2]) ||
+                   (this.bigField[0, 0] != '\0' && this.bigField[0, 0] == this.bigField[1, 1] && this.bigField[1, 1] == this.bigField[2, 2]) ||
+                   (this.bigField[2, 0] != '\0' && this.bigField[2, 0] == this.bigField[1, 1] && this.bigField[1, 1] == this.bigField[0, 2]) ||
+                   (this.bigField[0, 0] != '\0' && this.bigField[0, 0] == this.bigField[1, 0] && this.bigField[1, 0] == this.bigField[2, 0]) ||
+                   (this.bigField[0, 1] != '\0' && this.bigField[0, 1] == this.bigField[1, 1] && this.bigField[1, 1] == this.bigField[2, 1]) ||
+                   (this.bigField[0, 2] != '\0' && this.bigField[0, 2] == this.bigField[1, 2] && this.bigField[1, 2] == this.bigField[2, 2]);
         }
 
         public int BigFieldPos(int row, int column) // выдаёт номер большой клетки из bigField, в которой сделан ход
@@ -221,6 +222,25 @@ namespace TicTacToePro
                     return 22;
                 default:
                     throw new ArgumentOutOfRangeException($"Такого поля {bigPos / 10},{bigPos % 10}, в которое был совершён ход, не существует!");
+            }
+        }
+
+        public void NextMove(int row, int column, int bigFieldPos)
+        {
+            int nextMoveSupposed = NextMovePos(row * 10 + column);
+            if (this.bigField[nextMoveSupposed / 10, nextMoveSupposed % 10] != null)
+        }
+
+        public void MakeAMove(int row, int column)
+        {
+            switch (XO)
+            {
+                case true:
+                    this.field[row, column] = 'X';
+                    return;
+                case false:
+                    this.field[row, column] = 'O';
+                    return;
             }
         }
     }

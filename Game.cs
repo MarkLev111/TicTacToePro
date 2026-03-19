@@ -49,14 +49,14 @@ namespace TicTacToePro
                     return this.bigField[bigFieldPos / 10, bigFieldPos % 10];
             }
 
-            bool bigfieldClosed = CheckFieldClosed(bigFieldPos);
-            if (bigfieldClosed && this.fieldsClosed == 9)
-                return 'N'; // ничья
-            // Ничья на любой единичной клетке вообще нам не нужна, она выходит из игры фактически
+            if (this.fieldsClosed == 9) // ничья
+                return 'N';
+            // если закрыты все 9 клеток, а проверка на победителя сверху не прошла,
+            // это автоматически ничья.
 
             XO = !XO;
 
-            NextMove(row, column);
+            NextMove(row, column, bigField[bigFieldPos / 10, bigFieldPos % 10] != '\0', bigFieldPos);
             return '.'; // ИГРАЕМ ДАЛЬШЕ
         }
 
@@ -99,8 +99,8 @@ namespace TicTacToePro
                             else if (this.field[row + 1, column - 1] == this.field[row, column] && this.field[row - 1, column + 1] == this.field[row, column]) return true;
                             else return false;
                         case 2: case 5: case 8:
-                            if (this.field[row, column - 1] == this.field[row, column] && this.field[row, column] == this.field[row, column]) return true;
-                            else if (this.field[row - 1, column] != '\0' && this.field[row, column] == this.field[row - 1, column] && this.field[row + 1, column] == this.field[row, column]) return true;
+                            if (this.field[row, column - 1] == this.field[row, column] && this.field[row, column + 1] == this.field[row, column]) return true;
+                            else if (this.field[row, column] == this.field[row - 1, column] && this.field[row + 1, column] == this.field[row, column]) return true;
                             else return false;
                         default:
                             throw new ArgumentOutOfRangeException($"Поля со столбцом {column} нет!");
@@ -130,6 +130,7 @@ namespace TicTacToePro
             }
         }
 
+        // если нет МЕСТА для фигуры, то ниже
         public bool CheckFieldClosed(int bigFieldPos) // если в большой клетке получилась ничья (ранее победа дала false)
         {
             int row = 0;
@@ -154,6 +155,15 @@ namespace TicTacToePro
                     return true;
             }
         }
+
+        //public bool CheckClosed()
+        //{
+        //    for (int i = 0; i < 3; i++)
+        //        for (int j = 0; j < 3; j++)
+        //            if (bigField[i, j] == '\0')
+        //                return false;
+        //    return true;
+        //}
 
         public bool CheckWinGame() // все варианты закончить игру чёткой победой
         {
@@ -259,16 +269,19 @@ namespace TicTacToePro
             }
         }
 
-        public void NextMove(int row, int column)
+        public void NextMove(int row, int column, bool fieldClosed, int bigFieldPos)
         {
             int nextMoveSupposed = NextMovePos(row * 10 + column);
-            if (!CheckFieldClosed(nextMoveSupposed))
+            if (bigField[nextMoveSupposed / 10, nextMoveSupposed % 10] == '\0')
             {
                 this.nextMove = nextMoveSupposed;
                 return;
             }
-            if (!CheckFieldClosed(this.nextMove))
-                return;
+            if (!CheckFieldClosed(this.nextMove) && !fieldClosed)
+                if (this.nextMove == -1)
+                    this.nextMove = bigFieldPos;
+                else
+                    return;
             else
                 this.nextMove = -1;
         }

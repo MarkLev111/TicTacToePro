@@ -49,7 +49,7 @@ namespace TicTacToePro
 
             XO = !XO;
 
-            NextMove(row, column, bigFieldPos);
+            NextMove(row, column, bigFieldPos, smallField);
         }
 
         public bool CheckWinField(int row, int column) // проверяет, что поле не пустое + что символы Х/О равны
@@ -225,10 +225,18 @@ namespace TicTacToePro
             }
         }
 
-        public void NextMove(int row, int column, int bigFieldPos)
+        public void NextMove(int row, int column, int bigFieldPos, bool smallField)
         {
             int nextMoveSupposed = NextMovePos(row * 10 + column);
-            if (this.bigField[nextMoveSupposed / 10, nextMoveSupposed % 10] != null)
+            if (this.bigField[nextMoveSupposed / 10, nextMoveSupposed % 10] == '\0')
+            {
+                this.nextMove = nextMoveSupposed;
+                return;
+            }
+            if (!smallField)
+                return;
+            else
+                this.nextMove = -1;
         }
 
         public void MakeAMove(int row, int column)

@@ -9,8 +9,8 @@ namespace TicTacToePro
     class Game
     {
         public bool XO { get; set; } // true - X, false — O
-        public char[,] field { get; set; }
-        public char[,] bigField { get; set; }
+        public char[,] field { get; }
+        public char[,] bigField { get; }
         private int fieldsClosed { get; set; }
         public int nextMove { get; set; }
 

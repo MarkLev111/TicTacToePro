@@ -87,7 +87,7 @@ namespace TicTacToePro
                 for (int col = 0; col < 9; col++)
                 {
                     // 1. Рисуем X и O
-                    char cellValue = game.field[row, col];
+                    char cellValue = game.field[row, col]; // получаем Х/О
                     buttons[row, col].Content = cellValue == '\0' ? "" : cellValue.ToString();
                     buttons[row, col].Foreground = cellValue == 'X' ? Brushes.Red : Brushes.Blue;
 
@@ -100,7 +100,7 @@ namespace TicTacToePro
                         // Если большое поле уже выиграно, закрашиваем его целиком
                         buttons[row, col].Background = bigFieldValue == 'X' ? Brushes.LightPink : Brushes.LightBlue;
                     }
-                    else if (game.nextMove == -1 || game.nextMove == bigFieldPos)
+                    else if ((game.nextMove == -1 && !game.CheckFieldClosed(bigFieldPos)) || game.nextMove == bigFieldPos)
                     {
                         // Доступные для хода поля подсвечиваем зеленым
                         buttons[row, col].Background = Brushes.LightGreen;

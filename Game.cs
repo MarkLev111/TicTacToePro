@@ -48,6 +48,8 @@ namespace TicTacToePro
                 if (gameResult) // есть победитель игры
                     return this.bigField[bigFieldPos / 10, bigFieldPos % 10];
             }
+            if (CheckFieldClosed(bigFieldPos))
+                this.fieldsClosed++;
 
             if (this.fieldsClosed == 9) // ничья
                 return 'N';
@@ -272,7 +274,7 @@ namespace TicTacToePro
         public void NextMove(int row, int column, bool fieldClosed, int bigFieldPos)
         {
             int nextMoveSupposed = NextMovePos(row * 10 + column);
-            if (bigField[nextMoveSupposed / 10, nextMoveSupposed % 10] == '\0')
+            if (bigField[nextMoveSupposed / 10, nextMoveSupposed % 10] == '\0' && !CheckFieldClosed(nextMoveSupposed))
             {
                 this.nextMove = nextMoveSupposed;
                 return;

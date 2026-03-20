@@ -63,8 +63,8 @@ namespace TicTacToePro
         }
 
         public bool CheckWinField(int row, int column) // проверяет, что поле не пустое + что символы Х/О равны
-        // ПЕРЕПРОВЕРИТЬ ЗДЕСЬ ВООБЩЕ ВСЁ, ОЧЕНЬ МНОГО БАГОВ
         {
+            ArgumentOutOfRangeException argcol = new ArgumentOutOfRangeException($"Поля со столбцом {column} нет!");
             switch (row)
             {
                 case 0: case 3: case 6:
@@ -80,12 +80,12 @@ namespace TicTacToePro
                             else if (this.field[row + 1, column] == this.field[row, column] && this.field[row + 2, column] == this.field[row, column]) return true;
                             else return false;
                         case 2: case 5: case 8:
-                            if (this.field[row, column - 2] == this.field[row, column - 1] && this.field[row, column - 1] == this.field[row, column]) return true;
+                            if (this.field[row, column - 2] == this.field[row, column] && this.field[row, column - 1] == this.field[row, column]) return true;
                             else if (this.field[row + 1, column] == this.field[row, column] && this.field[row + 2, column] == this.field[row, column]) return true;
                             else if (this.field[row + 1, column - 1] == this.field[row, column] && this.field[row + 2, column - 2] == this.field[row, column]) return true;
                             else return false;
                         default:
-                            throw new ArgumentOutOfRangeException($"Поля со столбцом {column} нет!");
+                            throw argcol;
                     }
                 case 1: case 4: case 7:
                     switch (column)
@@ -105,7 +105,7 @@ namespace TicTacToePro
                             else if (this.field[row, column] == this.field[row - 1, column] && this.field[row + 1, column] == this.field[row, column]) return true;
                             else return false;
                         default:
-                            throw new ArgumentOutOfRangeException($"Поля со столбцом {column} нет!");
+                            throw argcol;
                     }
                 case 2: case 5: case 8:
                     switch (column)
@@ -125,7 +125,7 @@ namespace TicTacToePro
                             else if (this.field[row - 1, column - 1] == this.field[row, column] && this.field[row - 2, column - 2] == this.field[row, column]) return true;
                             else return false;
                         default:
-                            throw new ArgumentOutOfRangeException($"Поля со столбцом {column} нет!");
+                            throw argcol;
                     }
                 default:
                     throw new ArgumentOutOfRangeException($"Поля с рядом {row} нет!");
@@ -181,6 +181,7 @@ namespace TicTacToePro
 
         public int BigFieldPos(int row, int column) // выдаёт номер большой клетки из bigField, в которой сделан ход
         {
+            ArgumentOutOfRangeException argcol = new ArgumentOutOfRangeException($"Большой клетки со столбцом {column} нет!");
             switch (row)
             {
                 case 0: case 1: case 2:
@@ -193,7 +194,7 @@ namespace TicTacToePro
                         case 6: case 7: case 8:
                             return 2;
                         default:
-                            throw new ArgumentOutOfRangeException($"Большой клетки со столбцом {column} нет!");
+                            throw argcol;
                     }
                 case 3: case 4: case 5:
                     switch (column)
@@ -205,7 +206,7 @@ namespace TicTacToePro
                         case 6: case 7: case 8:
                             return 12;
                         default:
-                            throw new ArgumentOutOfRangeException($"Большой клетки со столбцом {column} нет!");
+                            throw argcol;
                     }
                 case 6: case 7: case 8:
                     switch (column)
@@ -217,7 +218,7 @@ namespace TicTacToePro
                         case 6: case 7: case 8:
                             return 22;
                         default:
-                            throw new ArgumentOutOfRangeException($"Большой клетки со столбцом {column} нет!");
+                            throw argcol;
                     }
                 default:
                     throw new ArgumentOutOfRangeException($"Большой клетки со строкой {row} нет!");

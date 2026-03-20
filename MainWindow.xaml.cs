@@ -17,7 +17,6 @@ namespace TicTacToePro
             buttons = new Button[9, 9];
             CreateBoard();
             UpdateUI(); // Отрисовываем начальное состояние
-            WindowName.Title = $"TicTacToePro — X";
         }
 
         // Генерация игрового поля

@@ -1,6 +1,7 @@
 ﻿<Window x:Class="TicTacToePro.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Icon
         Title="TicTacToePro" Name="WindowName" Height="650" Width="600"
         WindowStartupLocation="CenterScreen">
 

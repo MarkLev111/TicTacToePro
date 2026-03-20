@@ -10,27 +10,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="ico\o256.ico" />
-    <None Remove="ico\o32.ico" />
-    <None Remove="ico\x256.ico" />
-    <None Remove="ico\x32.ico" />
     <None Remove="ico\xo256.ico" />
     <None Remove="ico\xo32.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="ico\o256.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="ico\o32.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="ico\x256.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="ico\x32.ico">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="ico\xo256.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

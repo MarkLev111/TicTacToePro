@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using TicTacToePro.Shared;
 
 namespace TicTacToePro
 {
@@ -153,9 +154,9 @@ namespace TicTacToePro
             //      что делать
             // });
 
-            connection.On<int, int, char, char>("Move", (row, column, XOToPut, result) =>
+            connection.On<MoveInfo>("Move", (data) =>
             {
-                Dispatcher.Invoke(() => Move(row, column, XOToPut, result)); // только внутренний код может трогать свой UI
+                Dispatcher.Invoke(() => Move(data)); // только внутренний код может трогать свой UI
             });
 
             connection.On<bool>("CreateGame", (XO) => // отправка пакета может быть другой !!!
@@ -185,12 +186,25 @@ namespace TicTacToePro
             }
         }
 
-        public void Move(int row, int column, char XOToPut, char result)
+        public void Move(MoveInfo data)
         {
-            game.field[row, column] = XOToPut; // просто постфактуп изменение символа
+            game.field[data.row, data.column] = data.XOToPut; // просто постфактум изменение символа
+            if (data.bigFieldChange != '\0')
+                game.bigField[data.bigFieldPos / 10, data.bigFieldPos % 10] = data.bigFieldChange;
+
+            UpdateUI(this.game);
+
+            if (data.result == 'X' || data.result == 'O' || data.result == 'N') // подумать, как можно это вынести в отдельный метод
+            {
+                GameResultWindow endGame = new GameResultWindow();
+                endGame.ResultText.Text = endGame.WinnerText(data.result);
+
+                if (endGame.ShowDialog() == true)
+                {
+                    game = new Game();
+                    UpdateUI(this.game);
+                }
+            }
         }
     }
 }
-
-// СДЕЛАТЬ ОБЩИЙ КЛАСС, В КОТОРОМ БУДЕТ ВСЯ НУЖНАЯ ИНФА ДЛЯ ОТПРАВКИ 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

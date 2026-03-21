@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
+using TicTacToePro.Shared;
 
 namespace TicTacToeProServer
 {
@@ -67,12 +68,13 @@ namespace TicTacToeProServer
                 return;
             else
             {
+                int bigFieldPos = game.BigFieldPos(row, column);
+                MoveInfo data = new MoveInfo(row, column, game.field[row, column], game.nextMove, result, bigFieldPos, game.bigField[bigFieldPos / 10, bigFieldPos % 10]);
+                await Clients.Group($"{game.X}{game.O}").SendAsync("Move", data);
+
                 //await Clients.Client(game.X).SendAsync("Move", row, column, result); // настоить посыльщик
                 //await Clients.Client(game.O).SendAsync("Move", row, column, result);
-                await Clients.Group($"{game.X}{game.O}").SendAsync("Move", row, column, game.bigField[row, column], result);
             }
-            // если у хода появился результат, его нужно передать обоим игрокам в формате нового сокращённого класса
-            // или просто параметрами. мб метод у клиента будет принимать от сервера эти параметры, а у него локальные обновлять.
         }
 
         public async void EndGame(Game game) // убрать их из своего списка игроков
@@ -104,3 +106,8 @@ namespace TicTacToeProServer
         }
     }
 }
+
+
+
+// если у хода появился результат, его нужно передать обоим игрокам в формате нового сокращённого класса
+// или просто параметрами. мб метод у клиента будет принимать от сервера эти параметры, а у него локальные обновлять.

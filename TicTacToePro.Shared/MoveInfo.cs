@@ -2,19 +2,23 @@
 {
     public class MoveInfo
     {
-        public int row { get; init; }
-        public int column { get; init; }
-        public char XOToPut { get; init; }
-        public int nextMove { get; init; }
-        public char result { get; init; }
+        public int row { get; set; }
+        public int column { get; set; }
+        public char XOToPut { get; set; }
+        public int nextMove { get; set; }
+        public char result { get; set; }
+        public int bigFieldPos { get; set; }
+        public char bigFieldChange { get; set; }
 
-        public MoveInfo(int row, int column, char XOToPut, int nextMove, char result)
+        public MoveInfo(int row, int column, char XOToPut, int nextMove, char result, int bigFieldPos, char bigFieldChange)
         {
             this.row = row;
             this.column = column;
             this.XOToPut = XOToPut;
             this.nextMove = nextMove;
             this.result = result;
+            this.bigFieldPos = bigFieldPos;
+            this.bigFieldChange = bigFieldChange;
         }
         public MoveInfo() { } // гемини сказал поставить конструктор без параметров
     }

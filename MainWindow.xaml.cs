@@ -7,9 +7,9 @@ namespace TicTacToePro
 {
     public partial class MainWindow : Window
     {
-        private Game game;
+        private Game? game;
         private Button[,] buttons;
-        private HubConnection connection;
+        private HubConnection? connection;
 
 
         // Singleplayer settings
@@ -160,9 +160,12 @@ namespace TicTacToePro
 
             connection.On<bool>("CreateGame", (XO) => // отправка пакета может быть другой !!!
             {
-                Dispatcher.Invoke(() => this.game = new MultiplayerGame(XO));
-                Dispatcher.Invoke(() => WindowTitle(XO));
-                Dispatcher.Invoke(() => UpdateUI(this.game));
+                Dispatcher.Invoke(() =>
+                {
+                    this.game = new MultiplayerGame(XO);
+                    WindowTitle(XO);
+                    UpdateUI(this.game);
+                });
             });
 
             Connect();

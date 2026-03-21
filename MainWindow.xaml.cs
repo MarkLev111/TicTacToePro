@@ -154,11 +154,25 @@ namespace TicTacToePro
 
             connection.On<bool>("CreateGame", (XO) => // отправка пакета может быть другой !!!
             {
-                this.game = new MultiplayerGame(XO);
+                Dispatcher.Invoke(() => this.game = new MultiplayerGame(XO));
+                Dispatcher.Invoke(() => UpdateUI(this.game));
             });
 
+            Connect();
+
             CreateBoard();
-            UpdateUI(this.game); // Отрисовываем начальное состояние
+        }
+
+        private async void Connect()
+        {
+            try
+            {
+                await this.connection.StartAsync();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Не удалось подключиться к серверу.");
+            }
         }
 
         public void Move(int row, int column)

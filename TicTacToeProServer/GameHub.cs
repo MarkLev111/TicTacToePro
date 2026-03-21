@@ -21,6 +21,7 @@ namespace TicTacToeProServer
         {
             string id = Context.ConnectionId;
             idsInQueue.Add(id);
+            Console.WriteLine($"Установление новое подключение: {id}");
 
             await base.OnConnectedAsync();
 
@@ -49,10 +50,14 @@ namespace TicTacToeProServer
             await Clients.Client(game.X).SendAsync("CreateGame", true); // отправить выполнение MultiplayerGame с Х/О
             await Clients.Client(game.O).SendAsync("CreateGame", false);
             // try-catch
+
+            Console.WriteLine($"Создана игра: {game.X} / {game.O}");
         }
 
         public async Task Move(int row, int column)
         {
+            Console.WriteLine($"Совершён ход {row},{column}");
+
             string id = Context.ConnectionId; // отправитель
 
             Game game = null;
@@ -72,10 +77,14 @@ namespace TicTacToeProServer
                 int bigFieldPos = game.BigFieldPos(row, column);
                 MoveInfo data = new MoveInfo(row, column, game.field[row, column], game.nextMove, result, bigFieldPos, game.bigField[bigFieldPos / 10, bigFieldPos % 10]);
                 await Clients.Group($"{game.X}{game.O}").SendAsync("Move", data);
+
+                Console.WriteLine($"В игру отправлен корректный ход {game.X} / {game.O}");
+
                 if (result != '.')
                 {
                     await Clients.Group($"{game.X}{game.O}").SendAsync("EndGame");
                     await EndGame(game);
+                    Console.WriteLine($"Игра {game.X} / {game.O} завершена");
                 }
             }
         }

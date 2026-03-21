@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace TicTacToePro
 {
@@ -9,24 +10,21 @@ namespace TicTacToePro
     {
         private Game game;
         private Button[,] buttons;
+        private HubConnection connection;
 
-        public MainWindow()
+
+        // Singleplayer settings
+
+
+        public MainWindow() // singleplayer
         {
             InitializeComponent();
             game = new Game();
             buttons = new Button[9, 9];
+            connection = null;
             CreateBoard();
-            UpdateUI(); // Отрисовываем начальное состояние
+            UpdateUI(this.game); // Отрисовываем начальное состояние
         }
-
-        //public MainWindow()
-        //{
-        //    InitializeComponent();
-        //    game = new Game();
-        //    buttons = new Button[9, 9];
-        //    CreateBoard();
-        //    UpdateUI(); // Отрисовываем начальное состояние
-        //}
 
         // Генерация игрового поля
         private void CreateBoard()
@@ -73,7 +71,7 @@ namespace TicTacToePro
                 return;
 
             // Обновляем интерфейс после хода
-            UpdateUI();
+            UpdateUI(this.game);
 
             if (result == 'X' || result == 'O' || result == 'N')
             {
@@ -83,14 +81,17 @@ namespace TicTacToePro
                 if (endGame.ShowDialog() == true)
                 {
                     game = new Game();
-                    UpdateUI();
+                    UpdateUI(this.game);
                 }
             }
         }
 
         // Синхронизация интерфейса с данными из класса Game
-        private void UpdateUI()
+        // подумать сделать здесь такую штуку: можно кидать переменную, и это будет game / mpGame в зависимости от игры
+        private void UpdateUI(Game game)
         {
+
+
             for (int row = 0; row < 9; row++)
             {
                 for (int col = 0; col < 9; col++)
@@ -126,6 +127,43 @@ namespace TicTacToePro
                 WindowName.Title = $"TicTacToePro — X";
             else
                 WindowName.Title = $"TicTacToePro — O";
+        }
+
+
+        // Multiplayer settings
+
+        public MainWindow(bool checker) // кнопка на мультиплеер будет передавать значение и будет вызываться этот метод
+        {
+            InitializeComponent();
+            buttons = new Button[9, 9];
+
+            HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
+            connectionBuilder.WithUrl("http://localhost:5000/game"); // сервер
+            connectionBuilder.WithAutomaticReconnect();
+            connection = connectionBuilder.Build();
+
+            // connection.On <ТИП ДАННЫХ> ("СЕРВЕРНЫЙ МЕТОД", (ПЕРЕМЕННАЯ) =>
+            // {
+            //      что делать
+            // });
+
+            connection.On<int, int>("Move", (row, column) =>
+            {
+                Dispatcher.Invoke(() => Move(row, column)); // только внутренний код может трогать свой UI
+            });
+
+            connection.On<bool>("CreateGame", (XO) => // отправка пакета может быть другой !!!
+            {
+                this.game = new MultiplayerGame(XO);
+            });
+
+            CreateBoard();
+            UpdateUI(this.game); // Отрисовываем начальное состояние
+        }
+
+        public void Move(int row, int column)
+        {
+
         }
     }
 }

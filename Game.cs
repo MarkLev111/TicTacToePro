@@ -133,7 +133,7 @@ namespace TicTacToePro
         }
 
         // если нет МЕСТА для фигуры, то ниже
-        public bool CheckFieldClosed(int bigFieldPos) // если в большой клетке получилась ничья (ранее победа дала false)
+        public virtual bool CheckFieldClosed(int bigFieldPos) // если в большой клетке получилась ничья (ранее победа дала false)
         {
             int row = 0;
             int column = 0;

@@ -9,16 +9,20 @@ namespace TicTacToeProServer
         // любой публичный метод автоматом ухо
     {
         private static List<string> idsInQueue = new List<string>();
-    //    private static List<Game> activeGames = new List<Game>(); // когда будет несколько игр, сюда буду их складывать
+        private static Dictionary<string, Game> playersInGame = new Dictionary<string, Game>();
+
+        //    private static List<Game> activeGames = new List<Game>(); // когда будет несколько игр, сюда буду их складывать
         // понять, надо ли оно вообще, если у меня есть playersInGame
-        private static List<Player> playersInGame = new List<Player>();
+
+        // private static List<Player> playersInGame = new List<Player>();
+        // меняю на словарь
 
         public override async Task OnConnectedAsync()
         {
             string id = Context.ConnectionId;
             idsInQueue.Add(id);
 
-            base.OnConnectedAsync();
+            await base.OnConnectedAsync();
 
             if (idsInQueue.Count >= 2)
                 await this.CreateGame();
@@ -34,8 +38,9 @@ namespace TicTacToeProServer
             Game game = new Game(first, second);
 
          //   activeGames.Add(game);
-            playersInGame.Add(new Player (first, game));
-            playersInGame.Add(new Player (second, game));
+
+            playersInGame.Add(first, game);
+            playersInGame.Add(second, game);
 
             await Groups.AddToGroupAsync(game.X, $"{game.X}{game.O}");
             await Groups.AddToGroupAsync(game.O, $"{game.X}{game.O}");
@@ -51,17 +56,19 @@ namespace TicTacToeProServer
             string id = Context.ConnectionId; // отправитель
 
             Game game = null;
-            Player[] players = playersInGame.ToArray();
-            for (int i = 0; i < players.Length; i++)
-            {
-                if (players[i].id == id)
-                {
-                    game = players[i].game;
-                    break;
-                }
-            }
+            playersInGame.TryGetValue(id, out game);
             if (game == null)
-                throw new Exception("Игра по айди не была найдена");
+                throw new Exception("Игрок с таким айди не играет в данный момент");
+
+            //Player[] players = playersInGame.ToArray();
+            //for (int i = 0; i < players.Length; i++)
+            //{
+            //    if (players[i].id == id)
+            //    {
+            //        game = players[i].game;
+            //        break;
+            //    }
+            //}
 
             char result = game.Move(id, row, column);
             if (result == '-') // до игрока даже не дойдёт эта команда, она остановится на сервере
@@ -79,33 +86,36 @@ namespace TicTacToeProServer
 
         public async void EndGame(Game game) // убрать их из своего списка игроков
         {
-       //     activeGames.Remove(game);
-
-            List<string> ids = new List<string>();
-            Player[] players = playersInGame.ToArray();
-            int counter = 0;
-            for (int i = 0; i < players.Length; i++)
-            {
-                Player player = players[i];
-                if (player.game == game) // проверить, что без .get получается
-                {
-                    ids.Add(player.id);
-                    counter++;
-                    playersInGame.Remove(player);
-                }
-                if (counter == 2)
-                    break;
-            }
-            if (counter != 2)
-                throw new Exception($"В игре было найдено {counter} человек");
+            //activeGames.Remove(game);
+            //List<string> ids = new List<string>();
+            //Player[] players = playersInGame.ToArray();
+            //int counter = 0;
+            //for (int i = 0; i < players.Length; i++)
+            //{
+            //    Player player = players[i];
+            //    if (player.game == game) // проверить, что без .get получается
+            //    {
+            //        ids.Add(player.id);
+            //        counter++;
+            //        playersInGame.Remove(player);
+            //    }
+            //    if (counter == 2)
+            //        break;
+            //}
+            //if (counter != 2)
+            //    throw new Exception($"В игре было найдено {counter} человек");
 
             // Отправить обоим по айдишникам сообщение, что игра окончена
+
+            playersInGame.Remove(game.X);
+            playersInGame.Remove(game.O);
 
             await Groups.RemoveFromGroupAsync(game.X, $"{game.X}{game.O}");
             await Groups.RemoveFromGroupAsync(game.O, $"{game.X}{game.O}");
         }
     }
 }
+
 
 
 

@@ -19,6 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TicTacToePro.Shared\TicTacToePro.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="ico\xo256.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

@@ -19,6 +19,15 @@ namespace TicTacToePro
             UpdateUI(); // Отрисовываем начальное состояние
         }
 
+        //public MainWindow()
+        //{
+        //    InitializeComponent();
+        //    game = new Game();
+        //    buttons = new Button[9, 9];
+        //    CreateBoard();
+        //    UpdateUI(); // Отрисовываем начальное состояние
+        //}
+
         // Генерация игрового поля
         private void CreateBoard()
         {

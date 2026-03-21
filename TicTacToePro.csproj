@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="ico\xo256.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

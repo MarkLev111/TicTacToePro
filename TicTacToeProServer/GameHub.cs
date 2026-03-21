@@ -9,7 +9,7 @@ namespace TicTacToeProServer
         // любой публичный метод автоматом ухо
     {
         private static List<string> idsInQueue = new List<string>();
-        private static Dictionary<string, Game> playersInGame = new Dictionary<string, Game>();
+        private static ConcurrentDictionary<string, Game> playersInGame = new ConcurrentDictionary<string, Game>();
 
         //    private static List<Game> activeGames = new List<Game>(); // когда будет несколько игр, сюда буду их складывать
         // понять, надо ли оно вообще, если у меня есть playersInGame
@@ -39,8 +39,8 @@ namespace TicTacToeProServer
 
          //   activeGames.Add(game);
 
-            playersInGame.Add(first, game);
-            playersInGame.Add(second, game);
+            playersInGame.TryAdd(first, game);
+            playersInGame.TryAdd(second, game);
 
             await Groups.AddToGroupAsync(game.X, $"{game.X}{game.O}");
             await Groups.AddToGroupAsync(game.O, $"{game.X}{game.O}");
@@ -60,16 +60,6 @@ namespace TicTacToeProServer
             if (game == null)
                 throw new Exception("Игрок с таким айди не играет в данный момент");
 
-            //Player[] players = playersInGame.ToArray();
-            //for (int i = 0; i < players.Length; i++)
-            //{
-            //    if (players[i].id == id)
-            //    {
-            //        game = players[i].game;
-            //        break;
-            //    }
-            //}
-
             char result = game.Move(id, row, column);
             if (result == '-') // до игрока даже не дойдёт эта команда, она остановится на сервере
                 return;
@@ -78,37 +68,18 @@ namespace TicTacToeProServer
                 int bigFieldPos = game.BigFieldPos(row, column);
                 MoveInfo data = new MoveInfo(row, column, game.field[row, column], game.nextMove, result, bigFieldPos, game.bigField[bigFieldPos / 10, bigFieldPos % 10]);
                 await Clients.Group($"{game.X}{game.O}").SendAsync("Move", data);
-
-                //await Clients.Client(game.X).SendAsync("Move", row, column, result); // настоить посыльщик
-                //await Clients.Client(game.O).SendAsync("Move", row, column, result);
+                if (result != '.')
+                {
+                    await Clients.Group($"{game.X}{game.O}").SendAsync("EndGame");
+                    await EndGame(game);
+                }
             }
         }
 
-        public async void EndGame(Game game) // убрать их из своего списка игроков
+        public async Task EndGame(Game game) // убрать их из своего списка игроков
         {
-            //activeGames.Remove(game);
-            //List<string> ids = new List<string>();
-            //Player[] players = playersInGame.ToArray();
-            //int counter = 0;
-            //for (int i = 0; i < players.Length; i++)
-            //{
-            //    Player player = players[i];
-            //    if (player.game == game) // проверить, что без .get получается
-            //    {
-            //        ids.Add(player.id);
-            //        counter++;
-            //        playersInGame.Remove(player);
-            //    }
-            //    if (counter == 2)
-            //        break;
-            //}
-            //if (counter != 2)
-            //    throw new Exception($"В игре было найдено {counter} человек");
-
-            // Отправить обоим по айдишникам сообщение, что игра окончена
-
-            playersInGame.Remove(game.X);
-            playersInGame.Remove(game.O);
+            playersInGame.TryRemove(game.X, out _);
+            playersInGame.TryRemove(game.O, out _);
 
             await Groups.RemoveFromGroupAsync(game.X, $"{game.X}{game.O}");
             await Groups.RemoveFromGroupAsync(game.O, $"{game.X}{game.O}");

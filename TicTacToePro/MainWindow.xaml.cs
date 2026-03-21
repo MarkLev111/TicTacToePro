@@ -169,6 +169,8 @@ namespace TicTacToePro
                 });
             });
 
+            connection.On("EndGame", async () => await connection.StopAsync());
+
             Connect();
 
             CreateBoard();

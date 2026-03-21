@@ -60,7 +60,11 @@ namespace TicTacToeProServer
             if (game == null)
                 throw new Exception("Игрок с таким айди не играет в данный момент");
 
-            char result = game.Move(id, row, column);
+            char result;
+            lock (game)
+            {
+                result = game.Move(id, row, column);
+            }
             if (result == '-') // до игрока даже не дойдёт эта команда, она остановится на сервере
                 return;
             else

@@ -106,20 +106,16 @@ namespace TicTacToePro
                     char bigFieldValue = game.bigField[bigFieldPos / 10, bigFieldPos % 10];
 
                     if (bigFieldValue != '\0')
-                    {
                         // Если большое поле уже выиграно, закрашиваем его целиком
                         buttons[row, col].Background = bigFieldValue == 'X' ? Brushes.LightPink : Brushes.LightBlue;
-                    }
+                    else if (!game.GetMyTurn() && game.nextMove == bigFieldPos)
+                        buttons[row, col].Background = Brushes.Gray;
                     else if ((game.nextMove == -1 && !game.CheckFieldClosed(bigFieldPos)) || game.nextMove == bigFieldPos)
-                    {
                         // Доступные для хода поля подсвечиваем зеленым
                         buttons[row, col].Background = Brushes.LightGreen;
-                    }
                     else
-                    {
                         // Недоступные поля оставляем белыми
                         buttons[row, col].Background = Brushes.White;
-                    }
                 }
             }
 

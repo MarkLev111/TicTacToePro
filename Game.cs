@@ -301,5 +301,10 @@ namespace TicTacToePro
                     return;
             }
         }
+
+        public virtual bool GetMyTurn() // никогда не будет серого в сингл плеере
+        {
+            return true;
+        }
     }
 }

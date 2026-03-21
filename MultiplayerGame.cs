@@ -10,6 +10,7 @@ namespace TicTacToePro
         public char[,] field { get; }
         public char[,] bigField { get; }
         public int nextMove { get; set; }
+        public bool myTurn { get; }
 
         public MultiplayerGame(bool XO)
         {
@@ -17,6 +18,7 @@ namespace TicTacToePro
             this.bigField = new char[3, 3];
             this.nextMove = -1; // -1 = в любое
             this.XO = XO;
+            this.myTurn = XO;
         }
 
         // нужно, чтобы срабатывали местные массивы
@@ -43,6 +45,11 @@ namespace TicTacToePro
                                 return false;
                     return true;
             }
+        }
+
+        public override bool GetMyTurn()
+        {
+            return this.myTurn;
         }
     }
 }

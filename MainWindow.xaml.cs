@@ -153,9 +153,9 @@ namespace TicTacToePro
             //      что делать
             // });
 
-            connection.On<int, int, char>("Move", (row, column, result) =>
+            connection.On<int, int, char, char>("Move", (row, column, XOToPut, result) =>
             {
-                Dispatcher.Invoke(() => Move(row, column, result)); // только внутренний код может трогать свой UI
+                Dispatcher.Invoke(() => Move(row, column, XOToPut, result)); // только внутренний код может трогать свой UI
             });
 
             connection.On<bool>("CreateGame", (XO) => // отправка пакета может быть другой !!!
@@ -185,9 +185,12 @@ namespace TicTacToePro
             }
         }
 
-        public void Move(int row, int column, char result)
+        public void Move(int row, int column, char XOToPut, char result)
         {
-
+            game.field[row, column] = XOToPut; // просто постфактуп изменение символа
         }
     }
 }
+
+// СДЕЛАТЬ ОБЩИЙ КЛАСС, В КОТОРОМ БУДЕТ ВСЯ НУЖНАЯ ИНФА ДЛЯ ОТПРАВКИ 
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

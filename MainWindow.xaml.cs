@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Microsoft.AspNetCore.SignalR.Client;
 
 namespace TicTacToePro
 {
@@ -58,31 +57,39 @@ namespace TicTacToePro
             }
         }
 
-        private void Cell_Click(object sender, RoutedEventArgs e)
+        private async void Cell_Click(object sender, RoutedEventArgs e)
         {
             Button clickedButton = (Button)sender;
             var pos = (Tuple<int, int>)clickedButton.Tag;
             int row = pos.Item1;
             int col = pos.Item2;
 
-            // Передаем ход в класс логики
-            char result = game.Move(row, col);
-            if (result == '-')
-                return;
-
-            // Обновляем интерфейс после хода
-            UpdateUI(this.game);
-
-            if (result == 'X' || result == 'O' || result == 'N')
+            if (this.game is Game) // СИНГЛ ПЛЕЕР
             {
-                GameResultWindow endGame = new GameResultWindow();
-                endGame.ResultText.Text = endGame.WinnerText(result);
 
-                if (endGame.ShowDialog() == true)
+                // Передаем ход в класс логики
+                char result = game.Move(row, col);
+                if (result == '-')
+                    return;
+
+                // Обновляем интерфейс после хода
+                UpdateUI(this.game);
+
+                if (result == 'X' || result == 'O' || result == 'N')
                 {
-                    game = new Game();
-                    UpdateUI(this.game);
+                    GameResultWindow endGame = new GameResultWindow();
+                    endGame.ResultText.Text = endGame.WinnerText(result);
+
+                    if (endGame.ShowDialog() == true)
+                    {
+                        game = new Game();
+                        UpdateUI(this.game);
+                    }
                 }
+            }
+            else // МУЛЬТИ ПЛЕЕР
+            {
+                await connection.SendAsync("Move", row, col); // инвоук ждёт ответ, сенд тупо шлёт
             }
         }
 
@@ -90,8 +97,6 @@ namespace TicTacToePro
         // подумать сделать здесь такую штуку: можно кидать переменную, и это будет game / mpGame в зависимости от игры
         private void UpdateUI(Game game)
         {
-
-
             for (int row = 0; row < 9; row++)
             {
                 for (int col = 0; col < 9; col++)
@@ -118,8 +123,13 @@ namespace TicTacToePro
                         buttons[row, col].Background = Brushes.White;
                 }
             }
+            if (game is Game)
+                WindowTitle(game.XO);
+        }
 
-            if (game.XO)
+        public void WindowTitle(bool XO)
+        {
+            if (XO)
                 WindowName.Title = $"TicTacToePro — X";
             else
                 WindowName.Title = $"TicTacToePro — O";
@@ -143,14 +153,15 @@ namespace TicTacToePro
             //      что делать
             // });
 
-            connection.On<int, int>("Move", (row, column) =>
+            connection.On<int, int, char>("Move", (row, column, result) =>
             {
-                Dispatcher.Invoke(() => Move(row, column)); // только внутренний код может трогать свой UI
+                Dispatcher.Invoke(() => Move(row, column, result)); // только внутренний код может трогать свой UI
             });
 
             connection.On<bool>("CreateGame", (XO) => // отправка пакета может быть другой !!!
             {
                 Dispatcher.Invoke(() => this.game = new MultiplayerGame(XO));
+                Dispatcher.Invoke(() => WindowTitle(XO));
                 Dispatcher.Invoke(() => UpdateUI(this.game));
             });
 
@@ -171,7 +182,7 @@ namespace TicTacToePro
             }
         }
 
-        public void Move(int row, int column)
+        public void Move(int row, int column, char result)
         {
 
         }

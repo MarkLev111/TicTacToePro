@@ -83,7 +83,7 @@ namespace TicTacToePro
 
                     if (endGame.ShowDialog() == true)
                     {
-                        GameResultAction(endGame.action); // проверить метод
+                        GameResultAction(endGame.action);
                     }
                 }
             }

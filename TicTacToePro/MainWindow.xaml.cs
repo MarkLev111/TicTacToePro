@@ -83,8 +83,9 @@ namespace TicTacToePro
 
                     if (endGame.ShowDialog() == true)
                     {
-                        game = new Game();
-                        UpdateUI(this.game);
+                        //game = new Game();
+                        //UpdateUI(this.game);
+                        GameResultAction(endGame.action); // проверить метод
                     }
                 }
             }
@@ -206,6 +207,23 @@ namespace TicTacToePro
                     game = new Game();
                     UpdateUI(this.game);
                 }
+            }
+        }
+
+        public void GameResultAction(PostGameAction action) // проверить метод
+        {
+            switch (action)
+            {
+                case (PostGameAction.NewGame):
+                    game = new Game();
+                    UpdateUI(this.game);
+                    return;
+                case (PostGameAction.GoToMenu):
+                    this.DialogResult = true;
+                    Menu menu = new Menu();
+                    return;
+                default:
+                    return;
             }
         }
     }

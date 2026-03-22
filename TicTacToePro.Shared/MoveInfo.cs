@@ -1,5 +1,6 @@
 ﻿namespace TicTacToePro.Shared
 {
+    public enum PostGameAction { None, NewGame, GoToMenu } // на гейм меню
     public class MoveInfo
     {
         public int row { get; set; }

@@ -69,7 +69,8 @@ namespace TicTacToePro
             int row = pos.Item1;
             int col = pos.Item2;
 
-            if (this.game is Game) // СИНГЛ ПЛЕЕР
+
+            if (connection == null) // СИНГЛ ПЛЕЕР
             {
 
                 // Передаем ход в класс логики
@@ -95,6 +96,9 @@ namespace TicTacToePro
             else // МУЛЬТИ ПЛЕЕР
             {
                 if (this.game == null)
+                    return;
+
+                if (!this.game.GetMyTurn())
                     return;
                 try
                 {
@@ -210,6 +214,9 @@ namespace TicTacToePro
             game.field[data.row, data.column] = data.XOToPut; // просто постфактум изменение символа
             if (data.bigFieldChange != '\0')
                 game.bigField[data.bigFieldPos / 10, data.bigFieldPos % 10] = data.bigFieldChange;
+
+            game.nextMove = data.nextMove;
+            game.SetMyTurn(); // меняем в UI, что сейчас чужой ход
 
             UpdateUI(this.game);
 

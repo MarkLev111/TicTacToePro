@@ -306,5 +306,10 @@ namespace TicTacToePro
         {
             return true;
         }
+
+        public virtual void SetMyTurn() // никогда не будет myTurn в сингл плеере
+        {
+            return;
+        }
     }
 }

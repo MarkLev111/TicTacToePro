@@ -10,7 +10,7 @@ namespace TicTacToePro
         //public char[,] field { get; }
         //public char[,] bigField { get; }
         //public int nextMove { get; set; }
-        public bool myTurn { get; }
+        public bool myTurn { get; set; }
 
         public MultiplayerGame(bool XO)
         {
@@ -54,6 +54,11 @@ namespace TicTacToePro
         public override bool GetMyTurn()
         {
             return this.myTurn;
+        }
+
+        public override void SetMyTurn()
+        {
+            this.myTurn = !this.myTurn;
         }
     }
 }

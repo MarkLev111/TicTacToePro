@@ -8,6 +8,8 @@ namespace TicTacToePro
 {
     public partial class MainWindow : Window
     {
+        public event Action ReadyToWork;
+
         private Game? game;
         private Button[,] buttons;
         private HubConnection? connection;
@@ -25,6 +27,7 @@ namespace TicTacToePro
             connection = null;
             CreateBoard();
             UpdateUI(this.game); // Отрисовываем начальное состояние
+            ReadyToWork?.Invoke();
         }
 
         // Генерация игрового поля
@@ -152,6 +155,7 @@ namespace TicTacToePro
         public MainWindow(Object o) // кнопка на мультиплеер будет передавать значение и будет вызываться этот метод
         {
             InitializeComponent();
+
             buttons = new Button[9, 9];
 
             HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
@@ -191,9 +195,12 @@ namespace TicTacToePro
             try
             {
                 await this.connection.StartAsync();
+
+                ReadyToWork?.Invoke();
             }
             catch (Exception ex)
             {
+                // сделать так, чтобы при неудачном подключении к серверу выбрасывалась ошибка и главное меню
                 MessageBox.Show("Не удалось подключиться к серверу.");
             }
         }
@@ -248,5 +255,10 @@ namespace TicTacToePro
             else
                 return;
         }
+
+        //private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //    ReadyToWork?.Invoke();
+        //}
     }
 }

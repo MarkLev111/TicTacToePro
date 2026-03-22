@@ -97,6 +97,12 @@ namespace TicTacToeProServer
             await Groups.RemoveFromGroupAsync(game.X, $"{game.X}{game.O}");
             await Groups.RemoveFromGroupAsync(game.O, $"{game.X}{game.O}");
         }
+
+        public override Task OnDisconnectedAsync(Exception? exception)
+        {
+            Console.WriteLine($"Разорвано подключение: {Context.ConnectionId}");
+            return base.OnDisconnectedAsync(exception);
+        }
     }
 }
 

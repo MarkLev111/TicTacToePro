@@ -31,14 +31,16 @@ namespace TicTacToePro
         public void Multiplayer(object sender, RoutedEventArgs e)
         {
             MainWindow window = new MainWindow(true);
+            window.ReadyToWork += () => this.Close();
             window.Show();
-            //this.Close();
         }
 
-        protected override void OnClosed(EventArgs e)
-        {
-            base.OnClosed(e);
-            Application.Current.Shutdown();
-        }
+        //protected override void OnClosed(EventArgs e)
+        //{
+        //    base.OnClosed(e);
+        //    Application.Current.Shutdown();
+        //}
     }
 }
+
+// окно меню не закрывается в мультиплеере

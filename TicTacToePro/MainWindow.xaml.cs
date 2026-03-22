@@ -91,7 +91,16 @@ namespace TicTacToePro
             }
             else // МУЛЬТИ ПЛЕЕР
             {
-                await connection.SendAsync("Move", row, col); // инвоук ждёт ответ, сенд тупо шлёт
+                if (this.game == null)
+                    return;
+                try
+                {
+                    await connection.SendAsync("Move", row, col); // инвоук ждёт ответ, сенд тупо шлёт
+                }
+                catch
+                {
+                    return;
+                }
             }
         }
 
@@ -140,7 +149,7 @@ namespace TicTacToePro
 
         // Multiplayer settings
 
-        public MainWindow(bool checker) // кнопка на мультиплеер будет передавать значение и будет вызываться этот метод
+        public MainWindow(Object o) // кнопка на мультиплеер будет передавать значение и будет вызываться этот метод
         {
             InitializeComponent();
             buttons = new Button[9, 9];

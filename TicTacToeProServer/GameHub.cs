@@ -8,7 +8,7 @@ namespace TicTacToeProServer
     class GameHub : Hub // заимствование класса из сигнала
         // любой публичный метод автоматом ухо
     {
-        private static List<string> idsInQueue = new List<string>();
+        private static List<string> idsInQueue = new List<string>(); // мб заменить на ConcurrentQueue
         private static ConcurrentDictionary<string, Game> playersInGame = new ConcurrentDictionary<string, Game>();
 
         //    private static List<Game> activeGames = new List<Game>(); // когда будет несколько игр, сюда буду их складывать

@@ -30,7 +30,9 @@ namespace TicTacToePro
         }
         public void Multiplayer(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = true;
+            MainWindow window = new MainWindow(true);
+            window.Show();
+            //this.Close();
         }
 
         protected override void OnClosed(EventArgs e)

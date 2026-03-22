@@ -24,8 +24,9 @@ namespace TicTacToePro
 
         public void Singleplayer(object sender, RoutedEventArgs e)
         {
-
-            this.DialogResult = true;
+            MainWindow window = new MainWindow();
+            window.Show();
+            this.Close();
         }
         public void Multiplayer(object sender, RoutedEventArgs e)
         {

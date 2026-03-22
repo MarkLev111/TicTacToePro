@@ -210,7 +210,7 @@ namespace TicTacToePro
             }
         }
 
-        public void GameResultAction(PostGameAction action) // проверить метод
+        public void GameResultAction(PostGameAction action)
         {
             switch (action)
             {
@@ -219,8 +219,10 @@ namespace TicTacToePro
                     UpdateUI(this.game);
                     return;
                 case (PostGameAction.GoToMenu):
-                    this.DialogResult = true;
+                    //this.DialogResult = true;
                     Menu menu = new Menu();
+                    menu.Show();
+                    this.Close();
                     return;
                 default:
                     return;

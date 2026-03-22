@@ -83,8 +83,6 @@ namespace TicTacToePro
 
                     if (endGame.ShowDialog() == true)
                     {
-                        //game = new Game();
-                        //UpdateUI(this.game);
                         GameResultAction(endGame.action); // проверить метод
                     }
                 }
@@ -227,6 +225,12 @@ namespace TicTacToePro
                 default:
                     return;
             }
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            Application.Current.Shutdown();
         }
     }
 }

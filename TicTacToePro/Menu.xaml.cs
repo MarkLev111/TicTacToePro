@@ -32,5 +32,11 @@ namespace TicTacToePro
         {
             this.DialogResult = true;
         }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            Application.Current.Shutdown();
+        }
     }
 }

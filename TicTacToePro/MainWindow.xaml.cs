@@ -11,6 +11,7 @@ namespace TicTacToePro
         private Game? game;
         private Button[,] buttons;
         private HubConnection? connection;
+        private bool gameInProgress = true;
 
 
         // Singleplayer settings
@@ -78,6 +79,7 @@ namespace TicTacToePro
 
                 if (result == 'X' || result == 'O' || result == 'N')
                 {
+                    gameInProgress = false;
                     GameResultWindow endGame = new GameResultWindow();
                     endGame.ResultText.Text = endGame.WinnerText(result);
 
@@ -229,8 +231,13 @@ namespace TicTacToePro
 
         protected override void OnClosed(EventArgs e)
         {
-            base.OnClosed(e);
-            Application.Current.Shutdown();
+            if (gameInProgress)
+            {
+                base.OnClosed(e);
+                Application.Current.Shutdown();
+            }
+            else
+                return;
         }
     }
 }

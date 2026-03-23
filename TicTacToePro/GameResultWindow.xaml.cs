@@ -35,6 +35,8 @@ namespace TicTacToePro
                     return "Победили нолики!";
                 case 'N':
                     return "Ничья!";
+                case 'D':
+                    return "Соперник отключился!";
                 default:
                     throw new ArgumentOutOfRangeException("Такого результата игры нет");
             }

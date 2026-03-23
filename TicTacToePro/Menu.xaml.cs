@@ -17,9 +17,12 @@ namespace TicTacToePro
     /// </summary>
     public partial class Menu : Window
     {
+        public event Action ReadyToWork;
+
         public Menu()
         {
             InitializeComponent();
+            ReadyToWork?.Invoke();
         }
 
         public void Singleplayer(object sender, RoutedEventArgs e)

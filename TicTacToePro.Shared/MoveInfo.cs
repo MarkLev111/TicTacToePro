@@ -1,6 +1,7 @@
 ﻿namespace TicTacToePro.Shared
 {
     public enum PostGameAction { None, NewGame, GoToMenu } // на гейм меню
+    public enum DisconnectedAction { None, Disconnect, Normal } // на дисконнект от сервера, в первую очередь, неестественный
     public class MoveInfo
     {
         public int row { get; set; }

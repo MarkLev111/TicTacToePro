@@ -189,7 +189,22 @@ namespace TicTacToePro
                 });
             });
 
-            connection.On("EndGame", async () => await connection.StopAsync());
+            connection.On<DisconnectedAction>("EndGame", async (action) =>
+            {
+                await connection.StopAsync();
+                if (action == DisconnectedAction.Disconnect) // ЭТО ЗНАЧИТ, ЧТО СОПЕРНИК ДИСКОННЕКТНУЛСЯ
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        gameInProgress = false;
+                        GameResultWindow endGame = new GameResultWindow();
+                        endGame.ResultText.Text = endGame.WinnerText('D'); // D - disconnect
+
+                        if (endGame.ShowDialog() == true)
+                            GameResultAction(endGame.action);
+                    });
+                }
+            });
 
             Connect();
 
@@ -224,6 +239,7 @@ namespace TicTacToePro
 
             if (data.result == 'X' || data.result == 'O' || data.result == 'N') // подумать, как можно это вынести в отдельный метод
             {
+                gameInProgress = false;
                 GameResultWindow endGame = new GameResultWindow();
                 endGame.ResultText.Text = endGame.WinnerText(data.result);
 
@@ -239,13 +255,21 @@ namespace TicTacToePro
         {
             switch (action)
             {
-                case (PostGameAction.NewGame):
-                    game = new Game();
-                    UpdateUI(this.game);
-                    return;
+                case (PostGameAction.NewGame): // сделать параметр Multiplayer / Singleplayer
+                    if (this.game is MultiplayerGame)
+                    {
+                        Multiplayer();
+                        return;
+                    }
+                    else
+                    {
+                        game = new Game();
+                        UpdateUI(this.game);
+                        return;
+                    }
                 case (PostGameAction.GoToMenu):
-                    //this.DialogResult = true;
                     Menu menu = new Menu();
+                    //menu.ReadyToWork += () => this.Close();
                     menu.Show();
                     this.Close();
                     return;
@@ -265,9 +289,11 @@ namespace TicTacToePro
                 return;
         }
 
-        //private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        //{
-        //    ReadyToWork?.Invoke();
-        //}
+        public void Multiplayer()
+        {
+            MainWindow window = new MainWindow(true);
+            window.ReadyToWork += () => this.Close();
+            window.Show();
+        }
     }
 }

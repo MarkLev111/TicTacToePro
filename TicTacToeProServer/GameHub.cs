@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq.Expressions;
 using TicTacToePro.Shared;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TicTacToeProServer
 {
@@ -80,9 +82,12 @@ namespace TicTacToeProServer
 
                 if (result != '.')
                 {
-                    await Clients.Group($"{game.X}{game.O}").SendAsync("EndGame");
-                    await EndGame(game);
-                    Console.WriteLine($"Игра {game.X} / {game.O} завершена");
+                    DisconnectedAction action = DisconnectedAction.Normal;
+                    EndGame(game); // мне нужно полное удаление игры
+                    await Clients.Client(game.X).SendAsync("EndGame", action);
+                    await Clients.Client(game.O).SendAsync("EndGame", action);
+
+                    Console.WriteLine($"Игра {game.X} / {game.O} завершена, игроки отключены");
                 }
             }
         }
@@ -96,12 +101,26 @@ namespace TicTacToeProServer
             await Groups.RemoveFromGroupAsync(game.O, $"{game.X}{game.O}");
         }
 
-        public override Task OnDisconnectedAsync(Exception? exception) // сделать окно закрытия игры, когда типа просто отключило от сервера
+        public async override Task OnDisconnectedAsync(Exception? exception) // сделать окно закрытия игры, когда типа просто отключило от сервера
         {
-            Console.WriteLine($"Разорвано подключение: {Context.ConnectionId}");
-            return base.OnDisconnectedAsync(exception);
+
+            Game game = null;
+            if (idsInQueue.Contains(Context.ConnectionId))
+            {
+                Console.WriteLine($"Разорвано подключение: {Context.ConnectionId}");
+                idsInQueue.Remove(Context.ConnectionId);
+            }
+            else if (playersInGame.TryGetValue(Context.ConnectionId, out game)) // при окончании игры я удаляю в EndGame игру. если тип отключился сам, игра останется, второму придёт завершение
+            {
+                Console.WriteLine($"Разорвано подключение: {Context.ConnectionId}");
+
+                DisconnectedAction action = DisconnectedAction.Disconnect;
+                await Clients.Group($"{game.X}{game.O}").SendAsync("EndGame", action); // ОТПРАВИТЬ ЕНАМ, ЧТО ИГРА БЫЛА ЗАВЕРШЕНА ВЫХОДОМ СОПЕРНИКА
+                await EndGame(game); // мне НЕ нужно полное удаление игры, уже запущен метод дисконнекта
+                Console.WriteLine($"Игра {game.X} / {game.O} завершена принудительно ({Context.ConnectionId} отключился)");
+            }
+
+            await base.OnDisconnectedAsync(exception);
         }
     }
 }
-
-// ХОД НЕ ОТПРАВЛЯЕТСЯ НА СЕРВЕР !!!!

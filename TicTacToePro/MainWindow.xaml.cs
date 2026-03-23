@@ -155,7 +155,7 @@ namespace TicTacToePro
             buttons = new Button[9, 9];
 
             HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
-            connectionBuilder.WithUrl("http://localhost:5195/gamehub"); // сервер
+            connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub"); // сервер
             connectionBuilder.WithAutomaticReconnect();
             connection = connectionBuilder.Build();
 

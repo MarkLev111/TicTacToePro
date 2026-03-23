@@ -16,11 +16,20 @@ namespace TicTacToeProServer
         //private static List<Game> activeGames = new List<Game>(); // когда будет несколько игр, сюда буду их складывать
         // понять, надо ли оно вообще, если у меня есть playersInGame
 
+        private readonly ILogger<GameHub> logger;
+
+        public GameHub(ILogger<GameHub> logger)
+        {
+            this.logger = logger;
+        }
+
         public override async Task OnConnectedAsync()
         {
             string id = Context.ConnectionId;
             idsInQueue.Add(id);
+
             Console.WriteLine($"Установление новое подключение: {id}");
+            logger.LogInformation($"Установление новое подключение: {id}");
 
             await base.OnConnectedAsync();
 
@@ -51,6 +60,7 @@ namespace TicTacToeProServer
             // try-catch
 
             Console.WriteLine($"Создана игра: {game.X} / {game.O}");
+            logger.LogInformation($"Создана игра: {game.X} / {game.O}");
         }
 
         public async Task Move(int row, int column)
@@ -79,6 +89,7 @@ namespace TicTacToeProServer
                 await Clients.Group($"{game.X}{game.O}").SendAsync("Move", data);
 
                 Console.WriteLine($"В игру {game.X} / {game.O} отправлен корректный ход {row},{column}");
+                logger.LogInformation($"В игру {game.X} / {game.O} отправлен корректный ход {row},{column}");
 
                 if (result != '.')
                 {
@@ -88,6 +99,7 @@ namespace TicTacToeProServer
                     await Clients.Client(game.O).SendAsync("EndGame", action);
 
                     Console.WriteLine($"Игра {game.X} / {game.O} завершена, игроки отключены");
+                    logger.LogInformation($"Игра {game.X} / {game.O} завершена, игроки отключены");
                 }
             }
         }
@@ -103,21 +115,23 @@ namespace TicTacToeProServer
 
         public async override Task OnDisconnectedAsync(Exception? exception) // сделать окно закрытия игры, когда типа просто отключило от сервера
         {
+            Console.WriteLine($"Разорвано подключение: {Context.ConnectionId}");
+            logger.LogInformation($"Разорвано подключение: {Context.ConnectionId}");
 
             Game game = null;
             if (idsInQueue.Contains(Context.ConnectionId))
             {
-                Console.WriteLine($"Разорвано подключение: {Context.ConnectionId}");
+
                 idsInQueue.Remove(Context.ConnectionId);
             }
             else if (playersInGame.TryGetValue(Context.ConnectionId, out game)) // при окончании игры я удаляю в EndGame игру. если тип отключился сам, игра останется, второму придёт завершение
             {
-                Console.WriteLine($"Разорвано подключение: {Context.ConnectionId}");
-
                 DisconnectedAction action = DisconnectedAction.Disconnect;
                 await Clients.Group($"{game.X}{game.O}").SendAsync("EndGame", action); // ОТПРАВИТЬ ЕНАМ, ЧТО ИГРА БЫЛА ЗАВЕРШЕНА ВЫХОДОМ СОПЕРНИКА
                 await EndGame(game); // мне НЕ нужно полное удаление игры, уже запущен метод дисконнекта
+
                 Console.WriteLine($"Игра {game.X} / {game.O} завершена принудительно ({Context.ConnectionId} отключился)");
+                logger.LogInformation($"Игра {game.X} / {game.O} завершена принудительно ({Context.ConnectionId} отключился)");
             }
 
             await base.OnDisconnectedAsync(exception);

@@ -16,7 +16,7 @@ namespace TicTacToeProServer
         //private static List<Game> activeGames = new List<Game>(); // когда будет несколько игр, сюда буду их складывать
         // понять, надо ли оно вообще, если у меня есть playersInGame
 
-        private readonly ILogger<GameHub> logger;
+        private readonly ILogger<GameHub> logger; // всё пишем в логи ради азура
 
         public GameHub(ILogger<GameHub> logger)
         {
@@ -28,7 +28,6 @@ namespace TicTacToeProServer
             string id = Context.ConnectionId;
             idsInQueue.Add(id);
 
-            Console.WriteLine($"Установление новое подключение: {id}");
             logger.LogInformation($"Установление новое подключение: {id}");
 
             await base.OnConnectedAsync();
@@ -59,7 +58,6 @@ namespace TicTacToeProServer
             await Clients.Client(game.O).SendAsync("CreateGame", false);
             // try-catch
 
-            Console.WriteLine($"Создана игра: {game.X} / {game.O}");
             logger.LogInformation($"Создана игра: {game.X} / {game.O}");
         }
 
@@ -88,7 +86,6 @@ namespace TicTacToeProServer
                 MoveInfo data = new MoveInfo(row, column, game.field[row, column], game.nextMove, result, bigFieldPos, game.bigField[bigFieldPos / 10, bigFieldPos % 10]);
                 await Clients.Group($"{game.X}{game.O}").SendAsync("Move", data);
 
-                Console.WriteLine($"В игру {game.X} / {game.O} отправлен корректный ход {row},{column}");
                 logger.LogInformation($"В игру {game.X} / {game.O} отправлен корректный ход {row},{column}");
 
                 if (result != '.')
@@ -98,7 +95,6 @@ namespace TicTacToeProServer
                     await Clients.Client(game.X).SendAsync("EndGame", action);
                     await Clients.Client(game.O).SendAsync("EndGame", action);
 
-                    Console.WriteLine($"Игра {game.X} / {game.O} завершена, игроки отключены");
                     logger.LogInformation($"Игра {game.X} / {game.O} завершена, игроки отключены");
                 }
             }
@@ -115,7 +111,6 @@ namespace TicTacToeProServer
 
         public async override Task OnDisconnectedAsync(Exception? exception) // сделать окно закрытия игры, когда типа просто отключило от сервера
         {
-            Console.WriteLine($"Разорвано подключение: {Context.ConnectionId}");
             logger.LogInformation($"Разорвано подключение: {Context.ConnectionId}");
 
             Game game = null;
@@ -130,7 +125,6 @@ namespace TicTacToeProServer
                 await Clients.Group($"{game.X}{game.O}").SendAsync("EndGame", action); // ОТПРАВИТЬ ЕНАМ, ЧТО ИГРА БЫЛА ЗАВЕРШЕНА ВЫХОДОМ СОПЕРНИКА
                 await EndGame(game); // мне НЕ нужно полное удаление игры, уже запущен метод дисконнекта
 
-                Console.WriteLine($"Игра {game.X} / {game.O} завершена принудительно ({Context.ConnectionId} отключился)");
                 logger.LogInformation($"Игра {game.X} / {game.O} завершена принудительно ({Context.ConnectionId} отключился)");
             }
 

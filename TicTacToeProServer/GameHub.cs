@@ -55,7 +55,7 @@ namespace TicTacToeProServer
 
         public async Task Move(int row, int column)
         {
-            Console.WriteLine($"Совершён ход {row},{column}");
+            //Console.WriteLine($"Совершён ход {row},{column}");
 
             string id = Context.ConnectionId; // отправитель
 
@@ -78,7 +78,7 @@ namespace TicTacToeProServer
                 MoveInfo data = new MoveInfo(row, column, game.field[row, column], game.nextMove, result, bigFieldPos, game.bigField[bigFieldPos / 10, bigFieldPos % 10]);
                 await Clients.Group($"{game.X}{game.O}").SendAsync("Move", data);
 
-                Console.WriteLine($"В игру отправлен корректный ход {game.X} / {game.O}");
+                Console.WriteLine($"В игру {game.X} / {game.O} отправлен корректный ход {row},{column}");
 
                 if (result != '.')
                 {

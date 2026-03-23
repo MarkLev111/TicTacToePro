@@ -133,6 +133,8 @@ namespace TicTacToePro
                         buttons[row, col].Background = bigFieldValue == 'X' ? Brushes.LightPink : Brushes.LightBlue;
                     else if (!game.GetMyTurn() && game.nextMove == bigFieldPos)
                         buttons[row, col].Background = Brushes.Gray;
+                    else if (this.game is MultiplayerGame && game.nextMove == -1 && !game.GetMyTurn()) // если приходит отбивка -1 по правилам
+                        buttons[row, col].Background = Brushes.White;
                     else if ((game.nextMove == -1 && !game.CheckFieldClosed(bigFieldPos)) || game.nextMove == bigFieldPos)
                         // Доступные для хода поля подсвечиваем зеленым
                         buttons[row, col].Background = Brushes.LightGreen;

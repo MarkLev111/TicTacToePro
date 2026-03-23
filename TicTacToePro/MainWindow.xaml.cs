@@ -82,16 +82,7 @@ namespace TicTacToePro
                 UpdateUI(this.game);
 
                 if (result == 'X' || result == 'O' || result == 'N')
-                {
-                    gameInProgress = false;
-                    GameResultWindow endGame = new GameResultWindow();
-                    endGame.ResultText.Text = endGame.WinnerText(result);
-
-                    if (endGame.ShowDialog() == true)
-                    {
-                        GameResultAction(endGame.action);
-                    }
-                }
+                    GameResultWindow(result);
             }
             else // МУЛЬТИ ПЛЕЕР
             {
@@ -112,7 +103,6 @@ namespace TicTacToePro
         }
 
         // Синхронизация интерфейса с данными из класса Game
-        // подумать сделать здесь такую штуку: можно кидать переменную, и это будет game / mpGame в зависимости от игры
         private void UpdateUI(Game game)
         {
             for (int row = 0; row < 9; row++)
@@ -194,15 +184,7 @@ namespace TicTacToePro
                 await connection.StopAsync();
                 if (action == DisconnectedAction.Disconnect) // ЭТО ЗНАЧИТ, ЧТО СОПЕРНИК ДИСКОННЕКТНУЛСЯ
                 {
-                    Dispatcher.Invoke(() =>
-                    {
-                        gameInProgress = false;
-                        GameResultWindow endGame = new GameResultWindow();
-                        endGame.ResultText.Text = endGame.WinnerText('D'); // D - disconnect
-
-                        if (endGame.ShowDialog() == true)
-                            GameResultAction(endGame.action);
-                    });
+                    Dispatcher.Invoke(() => GameResultWindow('D'));
                 }
             });
 
@@ -239,15 +221,7 @@ namespace TicTacToePro
 
             if (data.result == 'X' || data.result == 'O' || data.result == 'N') // подумать, как можно это вынести в отдельный метод
             {
-                gameInProgress = false;
-                GameResultWindow endGame = new GameResultWindow();
-                endGame.ResultText.Text = endGame.WinnerText(data.result);
-
-                if (endGame.ShowDialog() == true)
-                {
-                    game = new Game();
-                    UpdateUI(this.game);
-                }
+                GameResultWindow(data.result);
             }
         }
 
@@ -294,6 +268,16 @@ namespace TicTacToePro
             MainWindow window = new MainWindow(true);
             window.ReadyToWork += () => this.Close();
             window.Show();
+        }
+
+        public void GameResultWindow(char result)
+        {
+            gameInProgress = false;
+            GameResultWindow endGame = new GameResultWindow();
+            endGame.ResultText.Text = endGame.WinnerText(result);
+
+            if (endGame.ShowDialog() == true)
+                GameResultAction(endGame.action);
         }
     }
 }

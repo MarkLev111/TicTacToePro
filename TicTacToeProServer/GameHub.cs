@@ -6,16 +6,13 @@ using TicTacToePro.Shared;
 namespace TicTacToeProServer
 {
     class GameHub : Hub // заимствование класса из сигнала
-        // любой публичный метод автоматом ухо
+    // любой публичный метод автоматом ухо
     {
         private static List<string> idsInQueue = new List<string>(); // мб заменить на ConcurrentQueue
         private static ConcurrentDictionary<string, Game> playersInGame = new ConcurrentDictionary<string, Game>();
 
-        //    private static List<Game> activeGames = new List<Game>(); // когда будет несколько игр, сюда буду их складывать
+        //private static List<Game> activeGames = new List<Game>(); // когда будет несколько игр, сюда буду их складывать
         // понять, надо ли оно вообще, если у меня есть playersInGame
-
-        // private static List<Player> playersInGame = new List<Player>();
-        // меняю на словарь
 
         public override async Task OnConnectedAsync()
         {
@@ -38,7 +35,7 @@ namespace TicTacToeProServer
 
             Game game = new Game(first, second);
 
-         //   activeGames.Add(game);
+            //activeGames.Add(game);
 
             playersInGame.TryAdd(first, game);
             playersInGame.TryAdd(second, game);
@@ -71,6 +68,7 @@ namespace TicTacToeProServer
                 result = game.Move(id, row, column);
             }
             if (result == '-') // до игрока даже не дойдёт эта команда, она остановится на сервере
+                // мб то, что ниже, даже не важно, потому что такие коды обрабатываются в бездну на стороне клиента
                 return;
             else
             {

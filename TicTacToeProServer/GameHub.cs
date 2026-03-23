@@ -96,7 +96,7 @@ namespace TicTacToeProServer
             await Groups.RemoveFromGroupAsync(game.O, $"{game.X}{game.O}");
         }
 
-        public override Task OnDisconnectedAsync(Exception? exception)
+        public override Task OnDisconnectedAsync(Exception? exception) // сделать окно закрытия игры, когда типа просто отключило от сервера
         {
             Console.WriteLine($"Разорвано подключение: {Context.ConnectionId}");
             return base.OnDisconnectedAsync(exception);

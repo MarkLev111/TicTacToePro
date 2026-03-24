@@ -256,7 +256,11 @@ namespace TicTacToePro
                     else
                     {
                         game = new Game();
+                        seconds = 0;
+                        time.AutoReset = true;
+                        time.Elapsed += OnTimerTick;
                         UpdateUI(this.game);
+                        time.Start();
                         return;
                     }
                 case (PostGameAction.GoToMenu):
@@ -274,6 +278,7 @@ namespace TicTacToePro
         {
             if (gameInProgress)
             {
+                this.time.Dispose();
                 base.OnClosed(e);
                 Application.Current.Shutdown();
             }
@@ -291,10 +296,7 @@ namespace TicTacToePro
         public void GameResultWindow(char result)
         {
             if (this.game is not MultiplayerGame)
-            {
-                this.time.Stop();
                 this.time.Dispose();
-            }
 
             gameInProgress = false;
             GameResultWindow endGame = new GameResultWindow();

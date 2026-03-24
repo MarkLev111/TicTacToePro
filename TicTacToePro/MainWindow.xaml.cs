@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using TicTacToePro.Shared;
+using System.Timers;
 
 namespace TicTacToePro
 {
@@ -14,6 +15,8 @@ namespace TicTacToePro
         private Button[,] buttons;
         private HubConnection? connection;
         private bool gameInProgress = true;
+        private System.Timers.Timer time = new System.Timers.Timer(1000);
+        private int seconds = 0;
 
 
         // Singleplayer settings
@@ -22,11 +25,18 @@ namespace TicTacToePro
         public MainWindow() // singleplayer
         {
             InitializeComponent();
+
             game = new Game();
             buttons = new Button[9, 9];
             connection = null;
+            time.AutoReset = true;
+            time.Elapsed += OnTimerTick;
+
             CreateBoard();
             UpdateUI(this.game); // Отрисовываем начальное состояние
+
+            time.Start();
+
             ReadyToWork?.Invoke();
         }
 
@@ -139,10 +149,16 @@ namespace TicTacToePro
 
         public void WindowTitle(bool XO)
         {
+            string timer = $"{seconds / 60}:{seconds % 60}";
+            if (seconds % 60 < 10)
+                timer = $"{seconds / 60}:0{seconds % 60}";
+            if (seconds / 60 < 10)
+                timer = "0" + timer;
+
             if (XO)
-                WindowName.Title = $"TicTacToePro — X";
+                WindowName.Title = $"TicTacToePro — X — {timer}";
             else
-                WindowName.Title = $"TicTacToePro — O";
+                WindowName.Title = $"TicTacToePro — O — {timer}";
         }
 
 
@@ -153,6 +169,7 @@ namespace TicTacToePro
             InitializeComponent();
 
             buttons = new Button[9, 9];
+            time = null;
 
             HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
             connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub"); // сервер
@@ -227,6 +244,7 @@ namespace TicTacToePro
 
         public void GameResultAction(PostGameAction action)
         {
+            time = new System.Timers.Timer(1000);
             switch (action)
             {
                 case (PostGameAction.NewGame): // сделать параметр Multiplayer / Singleplayer
@@ -272,12 +290,27 @@ namespace TicTacToePro
 
         public void GameResultWindow(char result)
         {
+            if (this.game is not MultiplayerGame)
+            {
+                this.time.Stop();
+                this.time.Dispose();
+            }
+
             gameInProgress = false;
             GameResultWindow endGame = new GameResultWindow();
             endGame.ResultText.Text = endGame.WinnerText(result);
 
             if (endGame.ShowDialog() == true)
                 GameResultAction(endGame.action);
+        }
+
+        public void OnTimerTick(Object? o, ElapsedEventArgs? e)
+        {
+            this.seconds++;
+            Dispatcher.Invoke(() =>
+            {
+                WindowTitle(this.game.XO);
+            });
         }
     }
 }

@@ -173,8 +173,8 @@ namespace TicTacToePro
             seconds = 0;
 
             HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
-            connectionBuilder.WithUrl("http://localhost:5195/gamehub"); // сервер локалхост
-            //connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub"); // сервер азур
+            //connectionBuilder.WithUrl("http://localhost:5195/gamehub"); // сервер локалхост
+            connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub"); // сервер азур
             connectionBuilder.WithAutomaticReconnect();
             connection = connectionBuilder.Build();
 

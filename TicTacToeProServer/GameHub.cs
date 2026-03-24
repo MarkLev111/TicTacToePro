@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
-using System.Diagnostics.Eventing.Reader;
-using System.Linq.Expressions;
 using TicTacToePro.Shared;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TicTacToeProServer
 {
@@ -17,10 +14,12 @@ namespace TicTacToeProServer
         // понять, надо ли оно вообще, если у меня есть playersInGame
 
         private readonly ILogger<GameHub> logger; // всё пишем в логи ради азура
+        private readonly IHubContext<GameHub> hubContext; // ради передачи времени
 
-        public GameHub(ILogger<GameHub> logger)
+        public GameHub(ILogger<GameHub> logger, IHubContext<GameHub> hubContext)
         {
             this.logger = logger;
+            this.hubContext = hubContext;
         }
 
         public override async Task OnConnectedAsync()
@@ -43,7 +42,7 @@ namespace TicTacToeProServer
             string second = idsInQueue.First();
             idsInQueue.Remove(second);
 
-            Game game = new Game(first, second);
+            Game game = new Game(first, second, hubContext);
 
             //activeGames.Add(game);
 
@@ -53,6 +52,7 @@ namespace TicTacToeProServer
             await Groups.AddToGroupAsync(game.X, $"{game.X}{game.O}");
             await Groups.AddToGroupAsync(game.O, $"{game.X}{game.O}");
 
+            game.time.Start();
 
             await Clients.Client(game.X).SendAsync("CreateGame", true); // отправить выполнение MultiplayerGame с Х/О
             await Clients.Client(game.O).SendAsync("CreateGame", false);

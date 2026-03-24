@@ -144,10 +144,10 @@ namespace TicTacToePro
                 }
             }
             if (game is Game)
-                WindowTitle(game.XO);
+                WindowTitle();
         }
 
-        public void WindowTitle(bool XO)
+        public void WindowTitle()
         {
             string timer = $"{seconds / 60}:{seconds % 60}";
             if (seconds % 60 < 10)
@@ -155,7 +155,7 @@ namespace TicTacToePro
             if (seconds / 60 < 10)
                 timer = "0" + timer;
 
-            if (XO)
+            if (game.XO)
                 WindowName.Title = $"TicTacToePro — X — {timer}";
             else
                 WindowName.Title = $"TicTacToePro — O — {timer}";
@@ -170,9 +170,11 @@ namespace TicTacToePro
 
             buttons = new Button[9, 9];
             time = null;
+            seconds = 0;
 
             HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
-            connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub"); // сервер
+            connectionBuilder.WithUrl("http://localhost:5195/gamehub"); // сервер локалхост
+            //connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub"); // сервер азур
             connectionBuilder.WithAutomaticReconnect();
             connection = connectionBuilder.Build();
 
@@ -191,7 +193,7 @@ namespace TicTacToePro
                 Dispatcher.Invoke(() =>
                 {
                     this.game = new MultiplayerGame(XO);
-                    WindowTitle(XO);
+                    WindowTitle();
                     UpdateUI(this.game);
                 });
             });
@@ -203,6 +205,15 @@ namespace TicTacToePro
                 {
                     Dispatcher.Invoke(() => GameResultWindow('D'));
                 }
+            });
+
+            connection.On<int>("Timer", (seconds) =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    this.seconds = seconds;
+                    WindowTitle();
+                });
             });
 
             Connect();
@@ -278,7 +289,8 @@ namespace TicTacToePro
         {
             if (gameInProgress)
             {
-                this.time.Dispose();
+                if (time != null)
+                    this.time.Dispose();
                 base.OnClosed(e);
                 Application.Current.Shutdown();
             }
@@ -311,7 +323,7 @@ namespace TicTacToePro
             this.seconds++;
             Dispatcher.Invoke(() =>
             {
-                WindowTitle(this.game.XO);
+                WindowTitle();
             });
         }
     }

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-//using System.Windows.Controls;
-//using System.Windows.Navigation;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.SignalR;
+using System.Timers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 // СЕРВЕРНАЯ ЛОГИКА
 
@@ -18,14 +17,20 @@ namespace TicTacToeProServer
         private int fieldsClosed { get; set; }
         public int nextMove { get; set; }
 
-        public Game(string first, string second)
+        public System.Timers.Timer time = new System.Timers.Timer(1000);
+        private int seconds = 0;
+
+        private IHubContext<GameHub> hub;
+
+        public Game(string first, string second, IHubContext<GameHub> hub)
         {
             this.XO = true;
             this.field = new char[9, 9];
             this.bigField = new char[3, 3];
             this.fieldsClosed = 0;
             this.nextMove = -1; // -1 = в любое
-            if (new Random().Next(0,2) == 0) // зарандомили, кто есть кто
+            this.hub = hub;
+            if (new Random().Next(0, 2) == 0) // зарандомили, кто есть кто
             {
                 this.X = first;
                 this.O = second;
@@ -35,6 +40,8 @@ namespace TicTacToeProServer
                 this.X = second;
                 this.O = first;
             }
+            time.AutoReset = true;
+            time.Elapsed += OnTimerTick;
         }
 
         public char Move(string id, int row, int column)
@@ -327,6 +334,17 @@ namespace TicTacToeProServer
                     this.field[row, column] = 'O';
                     return;
             }
+        }
+
+        private async void OnTimerTick(System.Object? o, ElapsedEventArgs? e)
+        {
+            this.seconds++;
+            await hub.Clients.Group($"{X}{O}").SendAsync("Timer", seconds);
+        }
+
+        public int GetSeconds()
+        {
+            return this.seconds;
         }
     }
 }

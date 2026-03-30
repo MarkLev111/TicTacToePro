@@ -8,11 +8,11 @@
         Title="StatsWindow" Height="450" Width="800">
     <Grid>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock x:Name="Games" FontSize="18" FontWeight="Bold"/>
-            <TextBlock x:Name="X" FontSize="18" FontWeight="Bold"/>
-            <TextBlock x:Name="O" FontSize="18" FontWeight="Bold"/>
-            <TextBlock x:Name="Draw" FontSize="18" FontWeight="Bold"/>
-            <Button Content="Главное меню" Click="Menu_Click" Margin="20,10"/>
+            <TextBlock x:Name="Games" FontSize="32" FontWeight="Bold"/>
+            <TextBlock x:Name="X" FontSize="32" FontWeight="Bold"/>
+            <TextBlock x:Name="O" FontSize="32" FontWeight="Bold"/>
+            <TextBlock x:Name="Draw" FontSize="32" FontWeight="Bold"/>
+            <Button Content="Главное меню" FontSize="18" Click="Menu_Click" Margin="20,10"/>
         </StackPanel>
     </Grid>
 </Window>

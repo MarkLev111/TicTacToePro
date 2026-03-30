@@ -14,13 +14,14 @@ namespace TicTacToePro
         public int Xwins { get; set; } = 0;
         public int Owins { get; set; } = 0;
         public int draws { get; set; } = 0;
-        private static string jsonPath = GetJsonPath();
+        private static string jsonPath { get; set; }
         public static Stats? currentStats { get; set; }
 
         public Stats() { }
 
         static Stats() // запустится при первом обращении к классу
         {
+            jsonPath = GetJsonPath();
             ReadJson();
         }
         public static void ReadJson()

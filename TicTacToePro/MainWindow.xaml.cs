@@ -308,7 +308,10 @@ namespace TicTacToePro
         public void GameResultWindow(char result)
         {
             if (this.game is not MultiplayerGame)
+            {
                 this.time.Dispose();
+                Stats.currentStats?.AddGame(result);
+            }
 
             gameInProgress = false;
             GameResultWindow endGame = new GameResultWindow();

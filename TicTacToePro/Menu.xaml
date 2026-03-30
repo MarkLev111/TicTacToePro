@@ -7,6 +7,7 @@
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
             <Button Content="Локальная игра" Click="Singleplayer" Margin="20,10"/>
             <Button Content="Игра по сети" Click="Multiplayer" Margin="20,10"/>
+            <Button Content="Статистика" Click="StatsWindow" Margin="20,10"/>
         </StackPanel>
     </Grid>
 </Window>

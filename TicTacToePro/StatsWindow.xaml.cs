@@ -9,6 +9,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using TicTacToePro.Shared;
+using static System.Collections.Specialized.BitVector32;
 
 namespace TicTacToePro
 {
@@ -17,7 +19,6 @@ namespace TicTacToePro
     /// </summary>
     public partial class StatsWindow : Window
     {
-        public event Action ReadyToWork;
         public StatsWindow()
         {
             InitializeComponent();
@@ -34,9 +35,14 @@ namespace TicTacToePro
             }
             this.X.Text = $"Побед X: {Stats.currentStats?.Xwins} ({XwinPercent}%)";
             this.O.Text = $"Побед O: {Stats.currentStats?.Owins} ({OwinPercent}%)";
-            this.O.Text = $"Ничейных игр: {Stats.currentStats?.draws} ({drawPercent}%)";
+            this.Draw.Text = $"Ничейных игр: {Stats.currentStats?.draws} ({drawPercent}%)";
+        }
 
-            ReadyToWork?.Invoke();
+        private void Menu_Click(object sender, RoutedEventArgs e)
+        {
+            Menu menu = new Menu();
+            menu.Show();
+            this.Close();
         }
     }
 }

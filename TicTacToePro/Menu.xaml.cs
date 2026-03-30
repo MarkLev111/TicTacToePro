@@ -37,8 +37,8 @@ namespace TicTacToePro
         public void StatsWindow(object sender, RoutedEventArgs e)
         {
             StatsWindow window = new StatsWindow();
-            window.ReadyToWork += () => this.Close();
             window.Show();
+            this.Close();
         }
 
         //protected override void OnClosed(EventArgs e)

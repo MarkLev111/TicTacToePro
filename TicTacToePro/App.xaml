@@ -5,6 +5,6 @@
              StartupUri="Menu.xaml"
              ShutdownMode="OnLastWindowClose">
     <Application.Resources>
-         
+
     </Application.Resources>
 </Application>

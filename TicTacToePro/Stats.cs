@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Xml;
@@ -10,42 +11,44 @@ namespace TicTacToePro
     internal class Stats
     {
         public int games { get; set; } = 0;
-        private int Xwins { get; set; } = 0;
-        private int Owins { get; set; } = 0;
-        private int draws { get; set; } = 0;
+        public int Xwins { get; set; } = 0;
+        public int Owins { get; set; } = 0;
+        public int draws { get; set; } = 0;
         private static string jsonPath = GetJsonPath();
+        public static Stats? currentStats { get; set; }
 
         public Stats()
         {
+            currentStats = this;
+        }
+
+        public static void ReadJson()
+        {
             if (!File.Exists(jsonPath)) // если файла нет, создаём новый
             {
-                File.WriteAllText(jsonPath, JsonSerializer.Serialize(this));
+                File.WriteAllText(jsonPath, JsonSerializer.Serialize(currentStats));
             }
             else // а если есть, читаем существующий
             {
-                Stats? stats = JsonSerializer.Deserialize<Stats>(File.ReadAllText(jsonPath));
-                this.games = stats.games;
-                this.Xwins = stats.Xwins;
-                this.Owins = stats.Owins;
-                this.draws = stats.draws;
+                currentStats = JsonSerializer.Deserialize<Stats>(File.ReadAllText(jsonPath));
             }
         }
 
         public void AddGame(char result)
         {
-            this.games++;
+            currentStats.games++;
             if (result == 'X')
-                this.Xwins++;
+                currentStats.Xwins++;
             else if (result == 'O')
-                this.Owins++;
+                currentStats.Owins++;
             else if (result == 'N')
-                this.draws++;
+                currentStats.draws++;
             WriteStats();
         }
 
         private void WriteStats()
         {
-            File.WriteAllText(jsonPath, JsonSerializer.Serialize(this));
+            File.WriteAllText(jsonPath, JsonSerializer.Serialize(currentStats));
         }
 
         private static string GetJsonPath()

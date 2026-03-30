@@ -13,14 +13,22 @@ namespace TicTacToePro
         private int Xwins { get; set; } = 0;
         private int Owins { get; set; } = 0;
         private int draws { get; set; } = 0;
+        private static string jsonPath = GetJsonPath();
 
         public Stats()
         {
-            Stats stats = JsonSerializer.Deserialize<Stats>(File.ReadAllText("stats.json"));
-            this.games = stats.games;
-            this.Xwins = stats.Xwins;
-            this.Owins = stats.Owins;
-            this.draws = stats.draws;
+            if (!File.Exists(jsonPath)) // если файла нет, создаём новый
+            {
+                File.WriteAllText(jsonPath, JsonSerializer.Serialize(this));
+            }
+            else // а если есть, читаем существующий
+            {
+                Stats? stats = JsonSerializer.Deserialize<Stats>(File.ReadAllText(jsonPath));
+                this.games = stats.games;
+                this.Xwins = stats.Xwins;
+                this.Owins = stats.Owins;
+                this.draws = stats.draws;
+            }
         }
 
         public void AddGame(char result)
@@ -35,9 +43,18 @@ namespace TicTacToePro
             WriteStats();
         }
 
-        public void WriteStats()
+        private void WriteStats()
         {
-            File.WriteAllText("stats.json", JsonSerializer.Serialize(this));
+            File.WriteAllText(jsonPath, JsonSerializer.Serialize(this));
+        }
+
+        private static string GetJsonPath()
+        {
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); // AppData
+            string gameFolder = Path.Combine(appDataPath, "TicTacToePro"); // ищем путь к папке игры
+            Directory.CreateDirectory(gameFolder);
+            string statsJson = Path.Combine(gameFolder, "stats.json");
+            return statsJson;
         }
     }
 }

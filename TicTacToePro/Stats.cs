@@ -17,15 +17,17 @@ namespace TicTacToePro
         private static string jsonPath = GetJsonPath();
         public static Stats? currentStats { get; set; }
 
-        public Stats()
-        {
-            currentStats = this;
-        }
+        public Stats() { }
 
+        static Stats() // запустится при первом обращении к классу
+        {
+            ReadJson();
+        }
         public static void ReadJson()
         {
             if (!File.Exists(jsonPath)) // если файла нет, создаём новый
             {
+                currentStats = new Stats();
                 File.WriteAllText(jsonPath, JsonSerializer.Serialize(currentStats));
             }
             else // а если есть, читаем существующий
@@ -36,13 +38,13 @@ namespace TicTacToePro
 
         public void AddGame(char result)
         {
-            currentStats.games++;
+            this.games++;
             if (result == 'X')
-                currentStats.Xwins++;
+                this.Xwins++;
             else if (result == 'O')
-                currentStats.Owins++;
+                this.Owins++;
             else if (result == 'N')
-                currentStats.draws++;
+                this.draws++;
             WriteStats();
         }
 
@@ -53,11 +55,18 @@ namespace TicTacToePro
 
         private static string GetJsonPath()
         {
-            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); // AppData
-            string gameFolder = Path.Combine(appDataPath, "TicTacToePro"); // ищем путь к папке игры
-            Directory.CreateDirectory(gameFolder);
-            string statsJson = Path.Combine(gameFolder, "stats.json");
-            return statsJson;
+            try
+            {
+                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); // AppData
+                string gameFolder = Path.Combine(appDataPath, "TicTacToePro"); // ищем путь к папке игры
+                Directory.CreateDirectory(gameFolder);
+                string statsJson = Path.Combine(gameFolder, "stats.json");
+                return statsJson;
+            }
+            catch
+            {
+                throw new Exception("Не удалось получить путь к файлам статистики"); // подумать, как такое может вообще возникать
+            }
         }
     }
 }

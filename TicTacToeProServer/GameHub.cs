@@ -35,6 +35,11 @@ namespace TicTacToeProServer
                 await this.CreateGame();
         }
 
+        public async Task Authorize(string id)
+        {
+
+        }
+
         public async Task CreateGame()
         {
             string first = idsInQueue.First();

@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using TicTacToePro.Shared;
 using System.Timers;
+using CredentialManagement;
 
 namespace TicTacToePro
 {
@@ -173,8 +174,11 @@ namespace TicTacToePro
             seconds = 0;
 
             HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
-            //connectionBuilder.WithUrl("http://localhost:5195/gamehub"); // сервер локалхост
-            connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub"); // сервер азур
+            connectionBuilder.WithUrl("http://localhost:5195/gamehub", options =>
+            {
+                options.AccessTokenProvider = () => Task.FromResult(Authorize.GetToken());
+            }); // сервер локалхост
+            //connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub"); // сервер азур
             connectionBuilder.WithAutomaticReconnect();
             connection = connectionBuilder.Build();
 

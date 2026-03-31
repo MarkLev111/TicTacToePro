@@ -186,7 +186,7 @@ namespace TicTacToePro
 
         private async void ConnectionOn()
         {
-            // connection.On <ТИП ДАННЫХ> ("СЕРВЕРНЫЙ МЕТОД", (ПЕРЕМЕННАЯ) =>
+            // connection.On <ТИП ПРИНИМАЕМЫХ ДАННЫХ ОТ СЕРВЕРА> ("СЕРВЕРНЫЙ МЕТОД", (ПЕРЕМЕННАЯ) =>
             // {
             //      что делать
             // });
@@ -225,7 +225,7 @@ namespace TicTacToePro
             });
         }
 
-        private async void Connect(string token)
+        private async void Connect(string token) // поменять на авторизационный метод
         {
             //if (string.IsNullOrEmpty(token))
             //{
@@ -244,6 +244,7 @@ namespace TicTacToePro
                 {
                     // сделать так, чтобы при неудачном подключении к серверу выбрасывалась ошибка и главное меню
                     MessageBox.Show("Не удалось подключиться к серверу.");
+
                 }
             //}
         }

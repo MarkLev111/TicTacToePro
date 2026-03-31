@@ -41,6 +41,18 @@ namespace TicTacToeProServer
 
         }
 
+        public async Task LoginRegister(UserData data) // запрос на логин или регистрацию
+        {
+            if (data.email == null) // логин
+            {
+
+            }
+            else // регистрация
+            {
+
+            }
+        }
+
         public async Task CreateGame()
         {
             string first = idsInQueue.First();

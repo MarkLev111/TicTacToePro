@@ -19,6 +19,12 @@ namespace TicTacToePro
         public Menu()
         {
             InitializeComponent();
+            if (!string.IsNullOrEmpty(Authorize.GetToken()))
+            {
+                this.Login.Visibility = Visibility.Hidden;
+                this.Logout.Content = "Выйти из аккаунта";
+                this.Logout.Visibility = Visibility.Visible;
+            }
             ReadyToWork?.Invoke();
         }
 
@@ -39,6 +45,16 @@ namespace TicTacToePro
             StatsWindow window = new StatsWindow();
             window.Show();
             this.Close();
+        }
+
+        public void Login(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        public void Logout(object sender, RoutedEventArgs e)
+        {
+
         }
 
         //protected override void OnClosed(EventArgs e)

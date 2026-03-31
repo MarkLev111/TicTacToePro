@@ -173,10 +173,12 @@ namespace TicTacToePro
             time = null;
             seconds = 0;
 
+            string token = Authorize.GetToken();
+
             HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
             connectionBuilder.WithUrl("http://localhost:5195/gamehub", options =>
             {
-                options.AccessTokenProvider = () => Task.FromResult(Authorize.GetToken());
+                options.AccessTokenProvider = () => Task.FromResult(token);
             }); // сервер локалхост
             //connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub"); // сервер азур
             connectionBuilder.WithAutomaticReconnect();
@@ -220,23 +222,31 @@ namespace TicTacToePro
                 });
             });
 
-            Connect();
+            Connect(token);
 
             CreateBoard();
         }
 
-        private async void Connect()
+        private async void Connect(string token)
         {
-            try
+            if (string.IsNullOrEmpty(token))
             {
-                await this.connection.StartAsync();
-
-                ReadyToWork?.Invoke();
+                // настроить менюшки и всё такое
+                MessageBox.Show("Вы не авторизированы для игры по сети.");
             }
-            catch (Exception ex)
+            else
             {
-                // сделать так, чтобы при неудачном подключении к серверу выбрасывалась ошибка и главное меню
-                MessageBox.Show("Не удалось подключиться к серверу.");
+                try
+                {
+                    await this.connection.StartAsync();
+
+                    ReadyToWork?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    // сделать так, чтобы при неудачном подключении к серверу выбрасывалась ошибка и главное меню
+                    MessageBox.Show("Не удалось подключиться к серверу.");
+                }
             }
         }
 

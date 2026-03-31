@@ -23,12 +23,12 @@ namespace TicTacToeProServer
             this.hubContext = hubContext;
         }
 
-        public override async Task OnConnectedAsync()
+        public override async Task OnConnectedAsync() // подключение 100% идёт с норм токеном
         {
             string id = Context.ConnectionId;
-            idsInQueue.Add(id);
-
             logger.LogInformation($"> Установление новое подключение: {id}");
+
+            idsInQueue.Add(id);
 
             await base.OnConnectedAsync();
 
@@ -122,7 +122,6 @@ namespace TicTacToeProServer
             Game game = null;
             if (idsInQueue.Contains(Context.ConnectionId))
             {
-
                 idsInQueue.Remove(Context.ConnectionId);
             }
             else if (playersInGame.TryGetValue(Context.ConnectionId, out game)) // при окончании игры я удаляю в EndGame игру. если тип отключился сам, игра останется, второму придёт завершение

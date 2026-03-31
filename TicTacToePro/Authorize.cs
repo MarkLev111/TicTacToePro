@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CredentialManagement;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace TicTacToePro
 {
@@ -33,13 +34,24 @@ namespace TicTacToePro
             return null;
         }
 
-        public void DeleteToken()
+        public static void DeleteToken()
         {
             var cred = new Credential();
             cred.Target = name;
             cred.Delete();
         }
 
-
+        public static HubConnection Connection()
+        {
+            HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
+            //connectionBuilder.WithUrl("http://localhost:5195/gamehub", options =>
+            //{
+            //    options.AccessTokenProvider = () => Task.FromResult(GetToken());
+            //}); // сервер локалхост
+            connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub"); // сервер азур
+            connectionBuilder.WithAutomaticReconnect();
+            HubConnection connection = connectionBuilder.Build();
+            return connection;
+        }
     }
 }

@@ -6,7 +6,7 @@
     <Grid>
         <StackPanel Margin="0,50,0,0">
             <Grid>
-                <TextBox x:Name="Login" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="LoginText" VerticalContentAlignment="Center"/>
                 <TextBlock IsHitTestVisible="False" 
                        Text="Логин" 
                        VerticalAlignment="Center" 
@@ -17,7 +17,7 @@
                         <Style TargetType="TextBlock">
                             <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=Login}" Value="">
+                                <DataTrigger Binding="{Binding Text, ElementName=LoginText}" Value="">
                                     <Setter Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -26,7 +26,7 @@
                 </TextBlock>
             </Grid>
             <Grid>
-                <TextBox x:Name="Password" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="PasswordText" VerticalContentAlignment="Center"/>
                 <TextBlock IsHitTestVisible="False" 
                        Text="Пароль" 
                        VerticalAlignment="Center" 
@@ -37,7 +37,7 @@
                         <Style TargetType="TextBlock">
                             <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Text, ElementName=Password}" Value="">
+                                <DataTrigger Binding="{Binding Text, ElementName=PasswordText}" Value="">
                                     <Setter Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -45,8 +45,8 @@
                     </TextBlock.Style>
                 </TextBlock>
             </Grid>
-            <Button Content="Логин" Click="Login" Margin="20,10"/>
-            <Button Content="Регистрация" Click="Register" Margin="20,10"/>
+            <Button Content="Логин" Click="Login_Click" Margin="20,10"/>
+            <Button Content="Регистрация" Click="Register_Click" Margin="20,10"/>
         </StackPanel>
     </Grid>
 </Window>

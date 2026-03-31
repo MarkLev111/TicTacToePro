@@ -175,15 +175,17 @@ namespace TicTacToePro
 
             string token = Authorize.GetToken();
 
-            HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
-            connectionBuilder.WithUrl("http://localhost:5195/gamehub", options =>
-            {
-                options.AccessTokenProvider = () => Task.FromResult(token);
-            }); // сервер локалхост
-            //connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub"); // сервер азур
-            connectionBuilder.WithAutomaticReconnect();
-            connection = connectionBuilder.Build();
+            connection = Authorize.Connection(); // вынес метод подключения туда, потому что будет нужен тот же коннект в логине
 
+            ConnectionOn(); // УШИ КОННЕКТА
+
+            Connect(token);
+
+            CreateBoard();
+        }
+
+        private async void ConnectionOn()
+        {
             // connection.On <ТИП ДАННЫХ> ("СЕРВЕРНЫЙ МЕТОД", (ПЕРЕМЕННАЯ) =>
             // {
             //      что делать
@@ -221,21 +223,17 @@ namespace TicTacToePro
                     WindowTitle();
                 });
             });
-
-            Connect(token);
-
-            CreateBoard();
         }
 
         private async void Connect(string token)
         {
-            if (string.IsNullOrEmpty(token))
-            {
-                // настроить менюшки и всё такое
-                MessageBox.Show("Вы не авторизированы для игры по сети.");
-            }
-            else
-            {
+            //if (string.IsNullOrEmpty(token))
+            //{
+            //    // настроить менюшки и всё такое
+            //    MessageBox.Show("Вы не авторизированы для игры по сети.");
+            //}
+            //else
+            //{
                 try
                 {
                     await this.connection.StartAsync();
@@ -247,7 +245,7 @@ namespace TicTacToePro
                     // сделать так, чтобы при неудачном подключении к серверу выбрасывалась ошибка и главное меню
                     MessageBox.Show("Не удалось подключиться к серверу.");
                 }
-            }
+            //}
         }
 
         public void Move(MoveInfo data)
@@ -299,7 +297,7 @@ namespace TicTacToePro
             }
         }
 
-        protected override void OnClosed(EventArgs e)
+        protected override void OnClosed(EventArgs e) // почему приложение не закрывается
         {
             if (gameInProgress)
             {

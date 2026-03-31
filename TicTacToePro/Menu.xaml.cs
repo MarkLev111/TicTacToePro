@@ -47,14 +47,19 @@ namespace TicTacToePro
             this.Close();
         }
 
-        public void Login(object sender, RoutedEventArgs e)
+        public void Login_Click(object sender, RoutedEventArgs e)
         {
-
+            Login login = new Login();
+            login.Show();
+            this.Close();
         }
 
-        public void Logout(object sender, RoutedEventArgs e)
+        public void Logout_Click(object sender, RoutedEventArgs e)
         {
-
+            Authorize.DeleteToken();
+            Menu window = new Menu();
+            window.Show();
+            this.Close();
         }
 
         //protected override void OnClosed(EventArgs e)

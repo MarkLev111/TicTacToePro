@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
 using TicTacToePro.Shared;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace TicTacToeProServer
 {

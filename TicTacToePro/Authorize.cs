@@ -30,19 +30,22 @@ namespace TicTacToePro
             using (var cred = new Credential())
             {
                 cred.Target = name;
-                if (cred.Load())
+                if (cred.Load() && IsTokenValid(cred.Password))
                 {
                     return cred.Password;
                 }
+                DeleteToken();
+                return null;
             }
-            return null;
         }
 
         internal static void DeleteToken()
         {
-            var cred = new Credential();
-            cred.Target = name;
-            cred.Delete();
+            using (var cred = new Credential())
+            {
+                cred.Target = name;
+                cred.Delete();
+            }
         }
 
         internal static string GetUsernameFromToken(string token)
@@ -55,6 +58,20 @@ namespace TicTacToePro
             var nameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name || c.Type == "unique_name");
 
             return nameClaim?.Value;
+        }
+
+        private static bool IsTokenValid(string token)
+        {
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+                return jwtToken.ValidTo > DateTime.UtcNow;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         internal static async void MainWindowConnect(MainWindow window)

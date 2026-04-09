@@ -81,7 +81,7 @@ namespace TicTacToePro
 
             await Connect(connection, window);
 
-            await connection.SendAsync("LoginRegister", data);
+            await connection.SendAsync("Authorize", data);
         }
 
         internal static HubConnection Connection()

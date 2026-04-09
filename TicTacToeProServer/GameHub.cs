@@ -44,12 +44,7 @@ namespace TicTacToeProServer
                 await this.CreateGame();
         }
 
-        public async Task Authorize(string id)
-        {
-
-        }
-
-        public async Task LoginRegister(UserData data) // запрос на логин или регистрацию
+        public async Task Authorize(UserData data) // запрос на логин или регистрацию
         {
             if (data.email == null) // логин
             {
@@ -103,7 +98,7 @@ namespace TicTacToeProServer
 
         private string SetToken(UserData user)
         {
-            var claims = new List<Claim> // общедоступное
+            var claims = new List<Claim> // общедоступная инфа о токене
             {
                 new Claim(ClaimTypes.Name, user.username),
                 new Claim(ClaimTypes.Email, user.email),
@@ -144,7 +139,7 @@ namespace TicTacToeProServer
 
             game.time.Start();
 
-            await Clients.Client(game.X).SendAsync("CreateGame", true); // отправить выполнение MultiplayerGame с Х/О
+            await Clients.Client(game.X).SendAsync("CreateGame", true); // отправляется выполнение MultiplayerGame с Х/О
             await Clients.Client(game.O).SendAsync("CreateGame", false);
             // try-catch
 

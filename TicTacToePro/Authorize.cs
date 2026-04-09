@@ -73,6 +73,12 @@ namespace TicTacToePro
                 Authorize.SaveToken(token);
             });
 
+            connection.On<string>("Error", async (errorMessage) =>
+            {
+                MessageBox.Show(errorMessage, "TicTacToePro");
+                await connection.StopAsync();
+            });
+
             await Connect(connection, window);
 
             await connection.SendAsync("LoginRegister", data);

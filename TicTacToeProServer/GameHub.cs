@@ -56,7 +56,7 @@ namespace TicTacToeProServer
                 var user = await dbContext.Users.FirstOrDefaultAsync(u => u.username == data.username);
                 if (user == null)
                 {
-                    // такого пользователя нет
+                    await Clients.User(Context.ConnectionId).SendAsync("Error", "Такого пользователя не существует.");
                     return;
                 }
                 else
@@ -64,7 +64,7 @@ namespace TicTacToeProServer
                     bool passwordCheck = BCrypt.Net.BCrypt.Verify(data.password, user.password);
                     if (!passwordCheck)
                     {
-                        // неправильный пароль
+                        await Clients.User(Context.ConnectionId).SendAsync("Error", "Неверный пароль.");
                         return;
                     }
                 }
@@ -73,10 +73,21 @@ namespace TicTacToeProServer
             {
                 data.password = BCrypt.Net.BCrypt.HashPassword(data.password);
 
-                bool exists = await dbContext.Users.AnyAsync(u => u.email == data.email || u.username == data.username);
-                if (exists)
+                bool existsEmail = await dbContext.Users.AnyAsync(u => u.email == data.email);
+                bool existsUsername = await dbContext.Users.AnyAsync(u => u.username == data.username);
+                if (existsEmail && existsUsername)
                 {
-                    // отправить пользователю отбивку, что не существует
+                    await Clients.User(Context.ConnectionId).SendAsync("Error", "Игрок с такой почтой и таким никнеймом уже существует.");
+                    return;
+                }
+                else if (existsEmail)
+                {
+                    await Clients.User(Context.ConnectionId).SendAsync("Error", "Игрок с такой почтой уже существует.");
+                    return;
+                }
+                else if (existsUsername)
+                {
+                    await Clients.User(Context.ConnectionId).SendAsync("Error", "Игрок с таким никнеймом уже существует.");
                     return;
                 }
                 else

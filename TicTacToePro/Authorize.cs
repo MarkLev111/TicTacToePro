@@ -1,12 +1,8 @@
 ﻿using CredentialManagement;
 using Microsoft.AspNetCore.SignalR.Client;
-using System;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 using System.Windows;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Windows.Threading;
 using TicTacToePro.Shared;
 
 namespace TicTacToePro
@@ -14,8 +10,8 @@ namespace TicTacToePro
     internal class Authorize
     {
         public static string name = "TicTacToePro";
-        public static string username { get; set; } = null; // придумать реализацию
-        public void SaveToken(string token)
+        public static string username { get; set; } = GetUsernameFromToken(GetToken());
+        public static void SaveToken(string token) // когда сервер передаёт токен, вшиваем его в винду с параметрами игры
         {
             var cred = new Credential();
 
@@ -47,6 +43,16 @@ namespace TicTacToePro
             cred.Delete();
         }
 
+        public static string GetUsernameFromToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            var nameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name || c.Type == "unique_name");
+
+            return nameClaim?.Value;
+        }
+
         public static HubConnection Connection()
         {
             HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
@@ -54,7 +60,7 @@ namespace TicTacToePro
             //{
             //    options.AccessTokenProvider = () => Task.FromResult(GetToken());
             //}); // сервер локалхост
-            connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub"); // сервер азур
+            connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub" + GetToken()); // сервер азур
             connectionBuilder.WithAutomaticReconnect();
             HubConnection connection = connectionBuilder.Build();
             return connection;

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 using TicTacToeProServer;
 
@@ -32,7 +33,7 @@ builder.Services.AddAuthentication(options =>
         {
             var accessToken = context.Request.Query["access_token"];
 
-            // Если запрос идет к хабу, подкладываем токен в систему проверки
+            // подключение к хабу -> токен часть пользователя
             var path = context.HttpContext.Request.Path;
             if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/gamehub"))
             {
@@ -51,6 +52,11 @@ builder.Services.AddCors(options => {
               .AllowCredentials();
     });
 });
+
+var connectionString = builder.Configuration.GetConnectionString("UsersDB");
+
+builder.Services.AddDbContext<DBContext>(options =>
+    options.UseSqlServer(connectionString));
 
 var app = builder.Build();
 

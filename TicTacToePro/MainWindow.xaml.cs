@@ -223,6 +223,11 @@ namespace TicTacToePro
                     WindowTitle();
                 });
             });
+
+            connection.On<string>("SaveToken", (token) =>
+            {
+                Authorize.SaveToken(token);
+            });
         }
 
         private async void Connect(string token) // поменять на авторизационный метод

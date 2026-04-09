@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System.Collections.Concurrent;
 using TicTacToePro.Shared;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace TicTacToeProServer
 {
@@ -16,11 +20,13 @@ namespace TicTacToeProServer
 
         private readonly ILogger<GameHub> logger; // всё пишем в логи ради азура
         private readonly IHubContext<GameHub> hubContext; // ради передачи времени
+        private readonly DBContext dbContext; // SQL
 
-        public GameHub(ILogger<GameHub> logger, IHubContext<GameHub> hubContext)
+        public GameHub(ILogger<GameHub> logger, IHubContext<GameHub> hubContext, DBContext dBContext)
         {
             this.logger = logger;
             this.hubContext = hubContext;
+            this.dbContext = dBContext;
         }
 
         public override async Task OnConnectedAsync() // подключение 100% идёт с норм токеном
@@ -49,8 +55,47 @@ namespace TicTacToeProServer
             }
             else // регистрация
             {
+                data.password = BCrypt.Net.BCrypt.HashPassword(data.password);
 
+                bool exists = await dbContext.Users.AnyAsync(u => u.email == data.email || u.username == data.username);
+                if (exists)
+                {
+                    // отправить пользователю отбивку, что не существует
+                }
+                else
+                {
+                    dbContext.Users.Add(data);
+                    await dbContext.SaveChangesAsync();
+
+                }
             }
+
+            string token = SetToken(data);
+            await Clients.User(Context.ConnectionId).SendAsync("SaveToken", token);
+        }
+
+        private string SetToken(UserData user)
+        {
+            var claims = new List<Claim> // общедоступное
+            {
+                new Claim(ClaimTypes.Name, user.username),
+                new Claim(ClaimTypes.Email, user.email),
+                new Claim("RegistrationDate", DateTime.UtcNow.ToString()) // а надо ли?
+            };
+
+            // 2. Достаем секретный ключ из конфига
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("H76?7w6eh7HGE!23w6h7&6@6pWt7@6yw87t"));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: "TicTacToePro",
+                audience: "TicTacToePro",
+                claims: claims,
+                expires: DateTime.Now.AddDays(7),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         public async Task CreateGame()

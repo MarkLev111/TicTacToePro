@@ -85,7 +85,7 @@ namespace TicTacToePro
             //{
             //    options.AccessTokenProvider = () => Task.FromResult(GetToken());
             //}); // сервер локалхост
-            connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehu5b" + GetToken()); // сервер азур
+            connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub" + GetToken()); // сервер азур
             connectionBuilder.WithAutomaticReconnect();
             HubConnection connection = connectionBuilder.Build();
             return connection;
@@ -146,7 +146,7 @@ namespace TicTacToePro
             catch (Exception ex)
             {
                 MessageBox.Show("Не удалось подключиться к серверу.", "TicTacToePro");
-                window.Close(); // менюшка не закрывается
+                window.Close();
             }
         }
     }

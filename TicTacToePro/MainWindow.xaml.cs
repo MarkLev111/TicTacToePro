@@ -175,14 +175,17 @@ namespace TicTacToePro
 
             string token = Authorize.GetToken();
 
-            //connection = Authorize.Connection(); // вынес метод подключения туда, потому что будет нужен тот же коннект в логине
-
-            //ConnectionOn(); // УШИ КОННЕКТА
-
-            //Connect(token);
             Authorize.MainWindowConnect(this);
 
             CreateBoard();
+
+            this.Loaded += LoadedExtra;
+        }
+
+        private async void LoadedExtra(object sender, RoutedEventArgs e)
+        {
+
+            ReadyToWork?.Invoke();
         }
 
         public void Move(MoveInfo data)
@@ -234,21 +237,33 @@ namespace TicTacToePro
             }
         }
 
-        //protected override void OnClosed(EventArgs e) // почему приложение не закрывается
+        //private void Logout_Click(object sender, RoutedEventArgs e)
         //{
-        //    if (gameInProgress)
-        //    {
-        //        if (time != null)
-        //            this.time.Dispose();
+        //    Menu menu = new Menu();
+        //    menu.Show();
 
-        //        base.OnClosed(e);
-        //        Application.Current.Shutdown();
-        //    }
-        //    else
-        //        return;
+        //    this.Close();
         //}
 
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            Menu menu = new Menu();
+            menu.Show();
+            base.OnClosing(e);
+        }
 
+        protected override async void OnClosed(EventArgs e) // почему приложение не закрывается
+        {
+            base.OnClosed(e);
+
+            if (time != null)
+            {
+                this.time.Stop();
+                this.time.Dispose();
+            }
+            if (connection != null)
+                await connection.StopAsync();
+        }
 
         public void Multiplayer()
         {
@@ -283,73 +298,3 @@ namespace TicTacToePro
         }
     }
 }
-
-//private async void ConnectionOn()
-//{
-//    // connection.On <ТИП ПРИНИМАЕМЫХ ДАННЫХ ОТ СЕРВЕРА> ("СЕРВЕРНЫЙ МЕТОД", (ПЕРЕМЕННАЯ) =>
-//    // {
-//    //      что делать
-//    // });
-
-//    connection.On<MoveInfo>("Move", (data) =>
-//    {
-//        Dispatcher.Invoke(() => Move(data)); // только внутренний код может трогать свой UI
-//    });
-
-//    connection.On<bool>("CreateGame", (XO) => // отправка пакета может быть другой !!!
-//    {
-//        Dispatcher.Invoke(() =>
-//        {
-//            this.game = new MultiplayerGame(XO);
-//            WindowTitle();
-//            UpdateUI(this.game);
-//        });
-//    });
-
-//    connection.On<DisconnectedAction>("EndGame", async (action) =>
-//    {
-//        await connection.StopAsync();
-//        if (action == DisconnectedAction.Disconnect) // ЭТО ЗНАЧИТ, ЧТО СОПЕРНИК ДИСКОННЕКТНУЛСЯ
-//        {
-//            Dispatcher.Invoke(() => GameResultWindow('D'));
-//        }
-//    });
-
-//    connection.On<int>("Timer", (seconds) =>
-//    {
-//        Dispatcher.Invoke(() =>
-//        {
-//            this.seconds = seconds;
-//            WindowTitle();
-//        });
-//    });
-
-//    connection.On<string>("SaveToken", (token) =>
-//    {
-//        Authorize.SaveToken(token);
-//    });
-//}
-
-//private async void Connect(string token) // поменять на авторизационный метод
-//{
-//    //if (string.IsNullOrEmpty(token))
-//    //{
-//    //    // настроить менюшки и всё такое
-//    //    MessageBox.Show("Вы не авторизированы для игры по сети.");
-//    //}
-//    //else
-//    //{
-//    try
-//    {
-//        await this.connection.StartAsync();
-
-//        ReadyToWork?.Invoke();
-//    }
-//    catch (Exception ex)
-//    {
-//        // сделать так, чтобы при неудачном подключении к серверу выбрасывалась ошибка и главное меню
-//        MessageBox.Show("Не удалось подключиться к серверу.");
-
-//    }
-//    //}
-//}

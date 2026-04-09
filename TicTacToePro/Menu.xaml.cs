@@ -24,6 +24,11 @@ namespace TicTacToePro
                 this.Logout.Content = "Выйти из аккаунта";
                 this.Logout.Visibility = Visibility.Visible;
             }
+            this.Loaded += LoadedExtra;
+        }
+
+        private void LoadedExtra(object sender, RoutedEventArgs e)
+        {
             ReadyToWork?.Invoke();
         }
 
@@ -39,6 +44,7 @@ namespace TicTacToePro
             window.ReadyToWork += () => this.Close();
             window.Show();
         }
+
         public void StatsWindow(object sender, RoutedEventArgs e)
         {
             StatsWindow window = new StatsWindow();

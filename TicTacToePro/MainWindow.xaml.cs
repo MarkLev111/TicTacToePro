@@ -184,7 +184,6 @@ namespace TicTacToePro
 
         private async void LoadedExtra(object sender, RoutedEventArgs e)
         {
-
             ReadyToWork?.Invoke();
         }
 
@@ -227,23 +226,12 @@ namespace TicTacToePro
                         return;
                     }
                 case (PostGameAction.GoToMenu):
-                    Menu menu = new Menu();
-                    //menu.ReadyToWork += () => this.Close();
-                    menu.Show();
                     this.Close();
                     return;
                 default:
                     return;
             }
         }
-
-        //private void Logout_Click(object sender, RoutedEventArgs e)
-        //{
-        //    Menu menu = new Menu();
-        //    menu.Show();
-
-        //    this.Close();
-        //}
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
@@ -252,17 +240,20 @@ namespace TicTacToePro
             base.OnClosing(e);
         }
 
-        protected override async void OnClosed(EventArgs e) // почему приложение не закрывается
+        protected override async void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
 
             if (time != null)
-            {
-                this.time.Stop();
-                this.time.Dispose();
-            }
+                TimerStop();
             if (connection != null)
                 await connection.StopAsync();
+        }
+
+        private void TimerStop()
+        {
+            this.time.Stop();
+            this.time.Dispose();
         }
 
         public void Multiplayer()
@@ -276,7 +267,7 @@ namespace TicTacToePro
         {
             if (this.game is not MultiplayerGame)
             {
-                this.time.Dispose();
+                TimerStop();
                 Stats.currentStats?.AddGame(result);
             }
 

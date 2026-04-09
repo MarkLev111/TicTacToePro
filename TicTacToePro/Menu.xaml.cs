@@ -14,7 +14,6 @@ namespace TicTacToePro
 {
     public partial class Menu : Window
     {
-        public event Action ReadyToWork;
         public Menu()
         {
             InitializeComponent();
@@ -24,12 +23,6 @@ namespace TicTacToePro
                 this.Logout.Content = "Выйти из аккаунта";
                 this.Logout.Visibility = Visibility.Visible;
             }
-            this.Loaded += LoadedExtra;
-        }
-
-        private void LoadedExtra(object sender, RoutedEventArgs e)
-        {
-            ReadyToWork?.Invoke();
         }
 
         public void Singleplayer(object sender, RoutedEventArgs e)
@@ -66,13 +59,5 @@ namespace TicTacToePro
             window.Show();
             this.Close();
         }
-
-        //protected override void OnClosed(EventArgs e)
-        //{
-        //    base.OnClosed(e);
-        //    Application.Current.Shutdown();
-        //}
     }
 }
-
-// окно меню не закрывается в мультиплеере

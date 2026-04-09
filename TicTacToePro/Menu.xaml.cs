@@ -34,8 +34,10 @@ namespace TicTacToePro
         public void Multiplayer(object sender, RoutedEventArgs e)
         {
             MainWindow window = new MainWindow(true);
-            window.ReadyToWork += () => this.Close();
-            window.Show();
+            window.ReadyToWork += () => {
+                window.Show();
+                this.Close();
+            };
         }
 
         public void StatsWindow(object sender, RoutedEventArgs e)

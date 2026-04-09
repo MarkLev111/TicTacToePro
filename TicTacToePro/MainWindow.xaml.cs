@@ -5,6 +5,7 @@ using System.Windows.Media;
 using TicTacToePro.Shared;
 using System.Timers;
 using CredentialManagement;
+using System.ComponentModel;
 
 namespace TicTacToePro
 {
@@ -169,11 +170,11 @@ namespace TicTacToePro
         {
             InitializeComponent();
 
+            Authorize.TokenCheck(this);
+
             buttons = new Button[9, 9];
             time = null;
             seconds = 0;
-
-            string token = Authorize.GetToken();
 
             Authorize.MainWindowConnect(this);
 
@@ -233,10 +234,13 @@ namespace TicTacToePro
             }
         }
 
-        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        protected override void OnClosing(CancelEventArgs e)
         {
-            Menu menu = new Menu();
-            menu.Show();
+            if (buttons != null)
+            {
+                Menu menu = new Menu();
+                menu.Show();
+            }
             base.OnClosing(e);
         }
 

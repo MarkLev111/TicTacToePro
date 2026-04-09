@@ -155,5 +155,14 @@ namespace TicTacToePro
                 window.Close();
             }
         }
+
+        internal static void TokenCheck(Window window)
+        {
+            if (GetToken() == null)
+            {
+                MessageBox.Show("Вы не авторизованы для игры по сети", "TicTacToePro");
+                window.Close();
+            }
+        }
     }
 }

@@ -1,29 +1,31 @@
 ﻿using CredentialManagement;
 using Microsoft.AspNetCore.SignalR.Client;
-using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Windows;
+using System.Windows.Threading;
 using TicTacToePro.Shared;
 
 namespace TicTacToePro
 {
     internal class Authorize
     {
-        public static string name = "TicTacToePro";
-        public static string username { get; set; } = GetUsernameFromToken(GetToken());
-        public static void SaveToken(string token) // когда сервер передаёт токен, вшиваем его в винду с параметрами игры
+        internal static string name = "TicTacToePro";
+        internal static string username { get; set; } = GetUsernameFromToken(GetToken());
+        internal static void SaveToken(string token) // когда сервер передаёт токен, вшиваем его в винду с параметрами игры
         {
-            var cred = new Credential();
+            using (var cred = new Credential())
+            {
+                cred.Password = token;
+                cred.Target = name;
+                cred.Type = CredentialType.Generic;     // Тип для обычных токенов/паролей
+                cred.PersistanceType = PersistanceType.LocalComputer; // Хранить после перезагрузки
 
-            cred.Password = token;
-            cred.Target = name;
-            cred.Type = CredentialType.Generic;     // Тип для обычных токенов/паролей
-            cred.PersistanceType = PersistanceType.LocalComputer; // Хранить после перезагрузки
-
-            cred.Save();
+                cred.Save();
+            }
         }
 
-        public static string GetToken()
+        internal static string GetToken()
         {
             using (var cred = new Credential())
             {
@@ -36,15 +38,17 @@ namespace TicTacToePro
             return null;
         }
 
-        public static void DeleteToken()
+        internal static void DeleteToken()
         {
             var cred = new Credential();
             cred.Target = name;
             cred.Delete();
         }
 
-        public static string GetUsernameFromToken(string token)
+        internal static string GetUsernameFromToken(string token)
         {
+            if (token == null)
+                return null;
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);
 
@@ -53,40 +57,87 @@ namespace TicTacToePro
             return nameClaim?.Value;
         }
 
-        public static HubConnection Connection()
+        internal static async void MainWindowConnect(MainWindow window)
+        {
+            window.connection = Authorize.Connection(); // ссылка
+            ConnectionOn(window.connection, window); // УШИ КОННЕКТА
+            await Connect(window.connection, window);
+        }
+
+        internal static async Task LoginRegister(UserData data, Window window) // чисто на логин и регу
+        {
+            HubConnection connection = Authorize.Connection();
+
+            connection.On<string>("SaveToken", token =>
+            {
+                Authorize.SaveToken(token);
+            });
+
+            await Connect(connection, window);
+
+            await connection.SendAsync("LoginRegister", data);
+        }
+
+        internal static HubConnection Connection()
         {
             HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
             //connectionBuilder.WithUrl("http://localhost:5195/gamehub", options =>
             //{
             //    options.AccessTokenProvider = () => Task.FromResult(GetToken());
             //}); // сервер локалхост
-            connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub" + GetToken()); // сервер азур
+            connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehu5b" + GetToken()); // сервер азур
             connectionBuilder.WithAutomaticReconnect();
             HubConnection connection = connectionBuilder.Build();
             return connection;
         }
 
-        public static async Task LoginRegister(UserData data, Window window)
+        private static async void ConnectionOn(HubConnection connection, MainWindow window)
         {
-            HubConnection connection = Authorize.Connection();
+            // connection.On <ТИП ПРИНИМАЕМЫХ ДАННЫХ ОТ СЕРВЕРА> ("СЕРВЕРНЫЙ МЕТОД", (ПЕРЕМЕННАЯ) =>
+            // {
+            //      что делать
+            // });
 
-            connection.On<Credential>("LoginRegister", async (cred) =>
+            connection.On<MoveInfo>("Move", (data) =>
             {
-                if (cred != null)
-                {
-                    cred.Save();
-                    username = data.username;
-                }
-                await connection.StopAsync();
-                window.Close();
+                window.Dispatcher.Invoke(() => window.Move(data)); // только внутренний код может трогать свой UI
             });
 
-            await StartAsync(connection, window);
+            connection.On<bool>("CreateGame", (XO) => // отправка пакета может быть другой !!!
+            {
+                window.Dispatcher.Invoke(() =>
+                {
+                    window.game = new MultiplayerGame(XO);
+                    window.WindowTitle();
+                    window.UpdateUI(window.game);
+                });
+            });
 
-            await connection.SendAsync("LoginRegister", data);
+            connection.On<DisconnectedAction>("EndGame", async (action) =>
+            {
+                await connection.StopAsync();
+                if (action == DisconnectedAction.Disconnect) // ЭТО ЗНАЧИТ, ЧТО СОПЕРНИК ДИСКОННЕКТНУЛСЯ
+                {
+                    window.Dispatcher.Invoke(() => window.GameResultWindow('D'));
+                }
+            });
+
+            connection.On<int>("Timer", (seconds) =>
+            {
+                window.Dispatcher.Invoke(() =>
+                {
+                    window.seconds = seconds;
+                    window.WindowTitle();
+                });
+            });
+
+            connection.On<string>("SaveToken", (token) =>
+            {
+                Authorize.SaveToken(token);
+            });
         }
 
-        public static async Task StartAsync(HubConnection connection, Window window)
+        internal static async Task Connect(HubConnection connection, Window window)
         {
             try
             {
@@ -94,9 +145,8 @@ namespace TicTacToePro
             }
             catch (Exception ex)
             {
-                // сделать так, чтобы при неудачном подключении к серверу выбрасывалась ошибка и главное меню
-                MessageBox.Show("Не удалось подключиться к серверу.");
-                window.Close();
+                MessageBox.Show("Не удалось подключиться к серверу.", "TicTacToePro");
+                window.Close(); // менюшка не закрывается
             }
         }
     }

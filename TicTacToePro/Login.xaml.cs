@@ -39,7 +39,7 @@ namespace TicTacToePro
             Authorize.LoginRegister(data, this);
         }
 
-        public void Register_Click(object sender, EventArgs e)
+        public void Register_Click(object sender, EventArgs e) // доделать
         {
             if (loginInProgress == true)
                 return;

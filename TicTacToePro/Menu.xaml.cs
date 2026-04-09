@@ -15,7 +15,6 @@ namespace TicTacToePro
     public partial class Menu : Window
     {
         public event Action ReadyToWork;
-
         public Menu()
         {
             InitializeComponent();

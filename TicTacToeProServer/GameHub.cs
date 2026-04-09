@@ -21,12 +21,14 @@ namespace TicTacToeProServer
         private readonly ILogger<GameHub> logger; // всё пишем в логи ради азура
         private readonly IHubContext<GameHub> hubContext; // ради передачи времени
         private readonly DBContext dbContext; // SQL
+        private readonly IConfiguration configuration; // ради JWT чтобы не хардкодить ключ
 
-        public GameHub(ILogger<GameHub> logger, IHubContext<GameHub> hubContext, DBContext dBContext)
+        public GameHub(ILogger<GameHub> logger, IHubContext<GameHub> hubContext, DBContext dBContext, IConfiguration configuration)
         {
             this.logger = logger;
             this.hubContext = hubContext;
             this.dbContext = dBContext;
+            this.configuration = configuration;
         }
 
         public override async Task OnConnectedAsync() // подключение 100% идёт с норм токеном
@@ -51,7 +53,21 @@ namespace TicTacToeProServer
         {
             if (data.email == null) // логин
             {
-
+                var user = await dbContext.Users.FirstOrDefaultAsync(u => u.username == data.username);
+                if (user == null)
+                {
+                    // такого пользователя нет
+                    return;
+                }
+                else
+                {
+                    bool passwordCheck = BCrypt.Net.BCrypt.Verify(data.password, user.password);
+                    if (!passwordCheck)
+                    {
+                        // неправильный пароль
+                        return;
+                    }
+                }
             }
             else // регистрация
             {
@@ -61,12 +77,12 @@ namespace TicTacToeProServer
                 if (exists)
                 {
                     // отправить пользователю отбивку, что не существует
+                    return;
                 }
                 else
                 {
                     dbContext.Users.Add(data);
                     await dbContext.SaveChangesAsync();
-
                 }
             }
 
@@ -84,12 +100,12 @@ namespace TicTacToeProServer
             };
 
             // 2. Достаем секретный ключ из конфига
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("H76?7w6eh7HGE!23w6h7&6@6pWt7@6yw87t"));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: "TicTacToePro",
-                audience: "TicTacToePro",
+                issuer: configuration["Jwt:Issuer"],
+                audience: configuration["Jwt:Audience"],
                 claims: claims,
                 expires: DateTime.Now.AddDays(7),
                 signingCredentials: creds

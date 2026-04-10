@@ -217,10 +217,9 @@ namespace TicTacToePro
                     {
                         bool connect = await Authorize.MainWindowConnect(this);
                         if (connect)
-                            this.Show();
+                            Multiplayer();
                         else
                             this.Close();
-                        Multiplayer();
                         return;
                     }
                     else

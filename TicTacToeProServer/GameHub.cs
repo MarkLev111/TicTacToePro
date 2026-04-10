@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace TicTacToeProServer
 {
-    [Authorize]
+    [Authorize] // он вообще не пустит в класс по 401
     class GameHub : Hub // заимствование класса из сигнала
     // любой публичный метод автоматом ухо
     {
@@ -38,8 +38,8 @@ namespace TicTacToeProServer
         {
             string id = Context.ConnectionId;
 
-            if (Context.User.Identity.IsAuthenticated)
-            {
+            //if (Context.User.Identity.IsAuthenticated)
+            //{
                 string username = Context.User.Identity.Name;
                 logger.LogInformation($"> {username} вошёл в игру");
 
@@ -47,16 +47,15 @@ namespace TicTacToeProServer
 
                 if (idsInQueue.Count >= 2)
                     await this.CreateGame();
-            }
-            else
-            {
-                logger.LogInformation($"> Установление анонимное подключение: {id}");
-            }
+            //}
+            //else
+            //{
+                //logger.LogInformation($"> Установление анонимное подключение: {id}");
+            //}
 
             await base.OnConnectedAsync();
         }
 
-        [AllowAnonymous]
         public async Task Authorize(UserData data) // запрос на логин или регистрацию
         {
             if (data.email == null) // логин

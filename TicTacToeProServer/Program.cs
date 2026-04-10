@@ -8,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
 
+builder.Services.AddControllers();
+
 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("H76?7w6eh7HGE!23w6h7&6@6pWt7@6yw87t"));
 
 builder.Services.AddAuthentication(options =>
@@ -67,6 +69,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapHub<GameHub>("/gamehub");
+
+app.MapControllers();
 
 Console.WriteLine("Сервер запущен");
 

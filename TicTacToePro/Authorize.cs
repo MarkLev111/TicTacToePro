@@ -1,6 +1,8 @@
 ﻿using CredentialManagement;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Windows;
 using System.Windows.Threading;
@@ -12,6 +14,7 @@ namespace TicTacToePro
     {
         internal static string name = "TicTacToePro";
         internal static string username { get; set; } = GetUsernameFromToken(GetToken());
+        internal static readonly HttpClient httpClient = new HttpClient();
         internal static void SaveToken(string token) // когда сервер передаёт токен, вшиваем его в винду с параметрами игры
         {
             using (var cred = new Credential())
@@ -23,6 +26,7 @@ namespace TicTacToePro
 
                 cred.Save();
             }
+            username = GetUsernameFromToken(token); // обновить на всякий
         }
 
         internal static string GetToken()
@@ -84,22 +88,19 @@ namespace TicTacToePro
 
         internal static async Task LoginRegister(UserData data, Window window) // чисто на логин и регу
         {
-            HubConnection connection = Authorize.Connection();
 
-            connection.On<string>("SaveToken", token =>
+            var response = await httpClient.PostAsJsonAsync("https://localhost:7224/api/auth/login", data);
+
+            if (response.IsSuccessStatusCode)
             {
-                Authorize.SaveToken(token);
-            });
-
-            connection.On<string>("Error", async (errorMessage) =>
+                string token = await response.Content.ReadAsStringAsync();
+                token = token.Trim('"');
+                SaveToken(token);
+            }
+            else
             {
-                MessageBox.Show(errorMessage, "TicTacToePro");
-                await connection.StopAsync();
-            });
-
-            await Connect(connection, window);
-
-            await connection.SendAsync("Authorize", data);
+                MessageBox.Show($"{response.ReasonPhrase}", "TicTacToePro");
+            }
         }
 
         internal static HubConnection Connection()
@@ -173,6 +174,12 @@ namespace TicTacToePro
             {
                 await connection.StartAsync();
             }
+            catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized) // 401
+            {
+                MessageBox.Show("Вы не авторизованы для игры по сети", "TicTacToePro");
+                if (window is MainWindow)
+                    window.Close();
+            }
             catch (Exception ex)
             {
                 MessageBox.Show("Не удалось подключиться к серверу.", "TicTacToePro");
@@ -183,6 +190,7 @@ namespace TicTacToePro
 
         internal static bool TokenCheck(Window window)
         {
+            return true; // ВРЕМЕННО ДЛЯ РАЗРАБОТКИ
             if (GetToken() == null)
             {
                 MessageBox.Show("Вы не авторизованы для игры по сети", "TicTacToePro");

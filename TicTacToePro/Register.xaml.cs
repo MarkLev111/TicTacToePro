@@ -10,7 +10,7 @@ namespace TicTacToePro
 {
     public partial class Register : Window
     {
-        private bool registerInProgress { get; set; } = false;
+        internal static bool registerInProgress { get; set; } = false;
         public Register()
         {
             InitializeComponent();

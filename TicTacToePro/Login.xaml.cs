@@ -6,7 +6,7 @@ namespace TicTacToePro
 {
     public partial class Login : Window
     {
-        private bool progress { get; set; } = false;
+        internal static bool progress { get; set; } = false;
         public Login()
         {
             InitializeComponent();

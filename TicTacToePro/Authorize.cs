@@ -109,6 +109,8 @@ namespace TicTacToePro
             {
                 MessageBox.Show($"При установке соединения с сервером произошла непредвиденная ошибка", "TicTacToePro");
             }
+            Login.progress = false;
+            Register.registerInProgress = false;
         }
 
         internal static HubConnection Connection()

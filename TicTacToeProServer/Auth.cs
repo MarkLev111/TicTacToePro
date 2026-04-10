@@ -20,6 +20,7 @@ namespace TicTacToeProServer
         {
             this.dbContext = dbContext;
             this.configuration = configuration;
+            Console.WriteLine("fdsg");
         }
 
         [HttpPost("login")] // Полный путь: /api/auth/login

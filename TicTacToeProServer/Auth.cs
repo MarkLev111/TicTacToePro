@@ -23,7 +23,7 @@ namespace TicTacToeProServer
         }
 
         [HttpPost("login")] // Полный путь: /api/auth/login
-        internal async Task<IActionResult> Authorize(UserData data) // запрос на логин или регистрацию
+        public async Task<IActionResult> Authorize([FromBody] UserData data) // запрос на логин или регистрацию
         {
             if (data.email == null) // логин
             {
@@ -36,6 +36,7 @@ namespace TicTacToeProServer
                     if (!passwordCheck)
                         return Unauthorized("Неверный пароль.");
                 }
+                data.email = await dbContext.Users.Where(u => u.username == data.username).Select(u => u.email).FirstOrDefaultAsync();
             }
             else // регистрация
             {

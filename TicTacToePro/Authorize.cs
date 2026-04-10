@@ -99,7 +99,8 @@ namespace TicTacToePro
             }
             else
             {
-                MessageBox.Show($"{response.ReasonPhrase}", "TicTacToePro");
+                string serverMessage = await response.Content.ReadAsStringAsync() ?? "Неизвестная ошибка";
+                MessageBox.Show($"{serverMessage}", "TicTacToePro");
             }
         }
 

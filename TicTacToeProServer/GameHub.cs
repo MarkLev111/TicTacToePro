@@ -188,9 +188,10 @@ namespace TicTacToeProServer
                 if (result != '.')
                 {
                     DisconnectedAction action = DisconnectedAction.Normal;
-                    EndGame(game); // мне нужно полное удаление игры
-                    await Clients.Client(game.X).SendAsync("EndGame", action);
-                    await Clients.Client(game.O).SendAsync("EndGame", action);
+                    await Clients.Group($"{game.X}{game.O}").SendAsync("EndGame", action, result);
+                    await EndGame(game); // мне нужно полное удаление игры
+                    //await Clients.Client(game.X).SendAsync("EndGame", action);
+                    //await Clients.Client(game.O).SendAsync("EndGame", action);
 
                     logger.LogInformation($"> Игра {game.X} / {game.O} завершена, игроки отключены");
                 }
@@ -218,7 +219,7 @@ namespace TicTacToeProServer
             else if (playersInGame.TryGetValue(Context.ConnectionId, out game)) // при окончании игры я удаляю в EndGame игру. если тип отключился сам, игра останется, второму придёт завершение
             {
                 DisconnectedAction action = DisconnectedAction.Disconnect;
-                await Clients.Group($"{game.X}{game.O}").SendAsync("EndGame", action); // ОТПРАВИТЬ ЕНАМ, ЧТО ИГРА БЫЛА ЗАВЕРШЕНА ВЫХОДОМ СОПЕРНИКА
+                await Clients.Group($"{game.X}{game.O}").SendAsync("EndGame", action, 'D'); // ОТПРАВИТЬ ЕНАМ, ЧТО ИГРА БЫЛА ЗАВЕРШЕНА ВЫХОДОМ СОПЕРНИКА
                 await EndGame(game); // мне НЕ нужно полное удаление игры, уже запущен метод дисконнекта
 
                 logger.LogInformation($"> Игра {game.X} / {game.O} завершена принудительно ({Context.ConnectionId} отключился)");

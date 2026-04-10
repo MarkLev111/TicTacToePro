@@ -161,12 +161,16 @@ namespace TicTacToePro
                 });
             });
 
-            connection.On<DisconnectedAction>("EndGame", async (action) =>
+            connection.On<DisconnectedAction, char>("EndGame", async (action, result) =>
             {
                 await connection.StopAsync();
                 if (action == DisconnectedAction.Disconnect) // ЭТО ЗНАЧИТ, ЧТО СОПЕРНИК ДИСКОННЕКТНУЛСЯ
                 {
                     window.Dispatcher.Invoke(() => window.GameResultWindow('D'));
+                }
+                else // пришёл эндгейм от сервера, обработается только после дисконекта
+                {
+                    window.Dispatcher.Invoke(() => window.GameResultWindow(result));
                 }
             });
 

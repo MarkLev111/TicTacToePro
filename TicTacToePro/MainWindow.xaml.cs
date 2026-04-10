@@ -201,25 +201,26 @@ namespace TicTacToePro
 
             UpdateUI(this.game);
 
-            if (data.result == 'X' || data.result == 'O' || data.result == 'N') // подумать, как можно это вынести в отдельный метод
-            {
-                GameResultWindow(data.result);
-            }
+            //if (data.result == 'X' || data.result == 'O' || data.result == 'N') // подумать, как можно это вынести в отдельный метод
+            //{
+            //    GameResultWindow(data.result);
+            //}
         }
 
         public async void GameResultAction(PostGameAction action)
         {
-            time = new System.Timers.Timer(1000);
+            time = new System.Timers.Timer(1000); // проверить, можно ли её в другое место стащить
             switch (action)
             {
                 case (PostGameAction.NewGame): // сделать параметр Multiplayer / Singleplayer
                     if (this.game is MultiplayerGame)
                     {
-                        bool connect = await Authorize.MainWindowConnect(this);
-                        if (connect)
-                            Multiplayer();
-                        else
-                            this.Close();
+                        //bool connect = await Authorize.MainWindowConnect(this);
+                        //if (connect)
+                        //    Multiplayer();
+                        //else
+                        //    this.Close();
+                        await Multiplayer();
                         return;
                     }
                     else
@@ -233,6 +234,7 @@ namespace TicTacToePro
                         return;
                     }
                 case (PostGameAction.GoToMenu):
+                    gameInProgress = true; // для корректного закрытия
                     this.Close();
                     return;
                 default:
@@ -242,7 +244,7 @@ namespace TicTacToePro
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            if (!Application.Current.Windows.OfType<Menu>().Any())
+            if (!Application.Current.Windows.OfType<Menu>().Any() && gameInProgress)
             {
                 Menu menu = new Menu();
                 menu.Show();
@@ -266,11 +268,20 @@ namespace TicTacToePro
             this.time.Dispose();
         }
 
-        public void Multiplayer()
+        public async Task Multiplayer()
         {
+            //MainWindow window = new MainWindow(true);
+            //window.ReadyToWork += () => this.Close();
+            //window.Show();
+
             MainWindow window = new MainWindow(true);
             window.ReadyToWork += () => this.Close();
-            window.Show();
+
+            bool connect = await Authorize.MainWindowConnect(window);
+            if (connect)
+                window.Show();
+            else
+                window.Close();
         }
 
         public void GameResultWindow(char result)

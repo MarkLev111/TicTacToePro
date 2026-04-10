@@ -36,7 +36,7 @@ namespace TicTacToeProServer
                     if (!passwordCheck)
                         return Unauthorized("Неверный пароль.");
                 }
-                data.email = await dbContext.Users.Where(u => u.username == data.username).Select(u => u.email).FirstOrDefaultAsync();
+                data.email = user.email;
             }
             else // регистрация
             {

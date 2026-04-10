@@ -20,7 +20,7 @@ namespace TicTacToePro
             if (!string.IsNullOrEmpty(Authorize.GetToken()))
             {
                 this.Login.Visibility = Visibility.Hidden;
-                this.Logout.Content = "Выйти из аккаунта";
+                this.Logout.Content = $"Выйти из аккаунта {Authorize.username}";
                 this.Logout.Visibility = Visibility.Visible;
             }
         }

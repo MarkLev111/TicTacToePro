@@ -88,19 +88,26 @@ namespace TicTacToePro
 
         internal static async Task LoginRegister(UserData data, Window window) // чисто на логин и регу
         {
-
-            var response = await httpClient.PostAsJsonAsync("https://localhost:7224/api/auth/login", data);
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                string token = await response.Content.ReadAsStringAsync();
-                token = token.Trim('"');
-                SaveToken(token);
+                var response = await httpClient.PostAsJsonAsync("https://localhost:7224/api/auth/login", data);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string token = await response.Content.ReadAsStringAsync();
+                    token = token.Trim('"');
+                    SaveToken(token);
+                    window.Close();
+                }
+                else
+                {
+                    string serverMessage = await response.Content.ReadAsStringAsync() ?? "Неизвестная ошибка";
+                    MessageBox.Show($"{serverMessage}", "TicTacToePro");
+                }
             }
-            else
+            catch
             {
-                string serverMessage = await response.Content.ReadAsStringAsync() ?? "Неизвестная ошибка";
-                MessageBox.Show($"{serverMessage}", "TicTacToePro");
+                MessageBox.Show($"При установке соединения с сервером произошла непредвиденная ошибка", "TicTacToePro");
             }
         }
 

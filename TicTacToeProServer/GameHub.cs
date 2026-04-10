@@ -6,9 +6,11 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TicTacToeProServer
 {
+    [Authorize]
     class GameHub : Hub // заимствование класса из сигнала
     // любой публичный метод автоматом ухо
     {
@@ -31,19 +33,30 @@ namespace TicTacToeProServer
             this.configuration = configuration;
         }
 
-        public override async Task OnConnectedAsync() // подключение 100% идёт с норм токеном
+        public override async Task OnConnectedAsync()
+            // если тип будет играть сам против себя? проверить такое несовпадение !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         {
             string id = Context.ConnectionId;
-            logger.LogInformation($"> Установление новое подключение: {id}");
 
-            idsInQueue.Add(id);
+            if (Context.User.Identity.IsAuthenticated)
+            {
+                string username = Context.User.Identity.Name;
+                logger.LogInformation($"> {username} вошёл в игру");
+
+                idsInQueue.Add(id);
+
+                if (idsInQueue.Count >= 2)
+                    await this.CreateGame();
+            }
+            else
+            {
+                logger.LogInformation($"> Установление анонимное подключение: {id}");
+            }
 
             await base.OnConnectedAsync();
-
-            if (idsInQueue.Count >= 2)
-                await this.CreateGame();
         }
 
+        [AllowAnonymous]
         public async Task Authorize(UserData data) // запрос на логин или регистрацию
         {
             if (data.email == null) // логин

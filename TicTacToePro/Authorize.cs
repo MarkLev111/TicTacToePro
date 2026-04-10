@@ -105,11 +105,17 @@ namespace TicTacToePro
         internal static HubConnection Connection()
         {
             HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
-            //connectionBuilder.WithUrl("http://localhost:5195/gamehub", options =>
+
+            connectionBuilder.WithUrl("https://localhost:7224/gamehub", options =>
+            {
+                options.AccessTokenProvider = () => Task.FromResult(GetToken());
+            }); // сервер локалхост
+
+            //connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub", options =>
             //{
             //    options.AccessTokenProvider = () => Task.FromResult(GetToken());
-            //}); // сервер локалхост
-            connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub" + GetToken()); // сервер азур
+            //}); // сервер азур
+
             connectionBuilder.WithAutomaticReconnect();
             HubConnection connection = connectionBuilder.Build();
             return connection;
@@ -170,17 +176,20 @@ namespace TicTacToePro
             catch (Exception ex)
             {
                 MessageBox.Show("Не удалось подключиться к серверу.", "TicTacToePro");
-                window.Close();
+                if (window is MainWindow)
+                    window.Close();
             }
         }
 
-        internal static void TokenCheck(Window window)
+        internal static bool TokenCheck(Window window)
         {
             if (GetToken() == null)
             {
                 MessageBox.Show("Вы не авторизованы для игры по сети", "TicTacToePro");
-                window.Close();
+                //window.Close();
+                return false;
             }
+            return true;
         }
     }
 }

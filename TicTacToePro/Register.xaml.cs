@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using TicTacToePro.Shared;
@@ -20,6 +21,11 @@ namespace TicTacToePro
             if (registerInProgress == true)
                 return;
             registerInProgress = true;
+            if (this.EmailText.Text == "" || this.LoginText.Text == "" || this.PasswordText.Text == "")
+            {
+                registerInProgress = false;
+                return;
+            }
             UserData data = new UserData(this.EmailText.Text, this.LoginText.Text, this.PasswordText.Text);
             Authorize.LoginRegister(data, this);
         }

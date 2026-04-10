@@ -16,12 +16,12 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
-    options.TokenValidationParameters = new TokenValidationParameters // параметры, по которым будет проверяться пользовательский токен
+    options.TokenValidationParameters = new TokenValidationParameters // параметры, по которым будет проверяться пользовательский токен АВТОМАТОМ !!!
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = key,
 
-        ValidateIssuer = false,
+        ValidateIssuer = true,
         ValidateAudience = false,
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero // убираем погрешность

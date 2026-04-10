@@ -170,7 +170,11 @@ namespace TicTacToePro
         {
             InitializeComponent();
 
-            Authorize.TokenCheck(this);
+            if (!Authorize.TokenCheck(this))
+            {
+                this.Close();
+                return;
+            }
 
             buttons = new Button[9, 9];
             time = null;

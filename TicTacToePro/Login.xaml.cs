@@ -26,6 +26,11 @@ namespace TicTacToePro
             if (progress) // чтобы не спамили кнопку
                 return;
             progress = true;
+            if (this.LoginText.Text == "" || this.PasswordText.Text == "")
+            {
+                progress = false;
+                return;
+            }
             UserData data = new UserData(null, this.LoginText.Text, this.PasswordText.Text);
             Authorize.LoginRegister(data, this);
         }

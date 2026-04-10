@@ -31,13 +31,33 @@ builder.Services.AddAuthentication(options =>
 
     options.Events = new JwtBearerEvents // обработка получения токена от пользователя
     {
+        //OnMessageReceived = context =>
+        //{
+        //    var accessToken = context.Request.Query["access_token"];
+
+        //    // подключение к хабу -> токен часть пользователя
+        //    var path = context.HttpContext.Request.Path;
+        //    if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/gamehub"))
+        //    {
+        //        context.Token = accessToken;
+        //    }
+        //    return Task.CompletedTask;
+        //}
+
         OnMessageReceived = context =>
         {
             var accessToken = context.Request.Query["access_token"];
 
-            // подключение к хабу -> токен часть пользователя
-            var path = context.HttpContext.Request.Path;
-            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/gamehub"))
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                var authHeader = context.Request.Headers["Authorization"].ToString();
+                if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                {
+                    accessToken = authHeader.Substring("Bearer ".Length).Trim();
+                    context.Token = accessToken;
+                }
+            }
+            else
             {
                 context.Token = accessToken;
             }

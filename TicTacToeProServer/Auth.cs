@@ -15,12 +15,13 @@ namespace TicTacToeProServer
     {
         private readonly DBContext dbContext; // SQL
         private readonly IConfiguration configuration; // ради JWT чтобы не хардкодить ключ
+        private readonly ILogger<Auth> logger; // всё пишем в логи ради азура
 
-        public Auth(DBContext dbContext, IConfiguration configuration)
+        public Auth(DBContext dbContext, IConfiguration configuration, ILogger<Auth> logger)
         {
             this.dbContext = dbContext;
             this.configuration = configuration;
-            Console.WriteLine("fdsg");
+            this.logger = logger;
         }
 
         [HttpPost("login")] // Полный путь: /api/auth/login
@@ -28,6 +29,7 @@ namespace TicTacToeProServer
         {
             if (data.email == null) // логин
             {
+                logger.LogInformation($"Попытка входа в аккаунт {data.username}");
                 var user = await dbContext.Users.FirstOrDefaultAsync(u => u.username == data.username);
                 if (user == null)
                     return Unauthorized("Такого пользователя не существует.");
@@ -41,6 +43,7 @@ namespace TicTacToeProServer
             }
             else // регистрация
             {
+                logger.LogInformation($"Попытка входа в аккаунт {data.username}");
                 data.password = BCrypt.Net.BCrypt.HashPassword(data.password);
 
                 bool existsEmail = await dbContext.Users.AnyAsync(u => u.email == data.email);

@@ -22,7 +22,6 @@ namespace TicTacToePro
         {
             action = PostGameAction.GoToMenu;
             this.DialogResult = true;
-            Menu menu = new Menu();
         }
 
         public string WinnerText(char winner)

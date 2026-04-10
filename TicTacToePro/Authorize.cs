@@ -46,6 +46,7 @@ namespace TicTacToePro
                 cred.Target = name;
                 cred.Delete();
             }
+            username = null;
         }
 
         internal static string GetUsernameFromToken(string token)

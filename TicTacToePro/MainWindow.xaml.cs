@@ -15,7 +15,7 @@ namespace TicTacToePro
 
         internal Game? game;
         internal Button[,] buttons;
-        internal HubConnection? connection;
+        internal HubConnection? connection { get; set; }
         internal bool gameInProgress = true;
         internal System.Timers.Timer time = new System.Timers.Timer(1000);
         internal int seconds = 0;
@@ -179,8 +179,6 @@ namespace TicTacToePro
             buttons = new Button[9, 9];
             time = null;
             seconds = 0;
-
-            Authorize.MainWindowConnect(this);
 
             CreateBoard();
 

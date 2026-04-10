@@ -14,6 +14,7 @@ namespace TicTacToePro
 {
     public partial class Menu : Window
     {
+        private bool progress { get; set; } = false;
         public Menu()
         {
             InitializeComponent();
@@ -31,13 +32,22 @@ namespace TicTacToePro
             window.Show();
             this.Close();
         }
-        public void Multiplayer(object sender, RoutedEventArgs e)
+        public async void Multiplayer(object sender, RoutedEventArgs e)
         {
+            if (progress)
+                return;
+            progress = true;
+
             MainWindow window = new MainWindow(true);
-            window.ReadyToWork += () => {
+            window.ReadyToWork += () => this.Close();
+
+            bool connect = await Authorize.MainWindowConnect(window);
+            if (connect)
                 window.Show();
-                this.Close();
-            };
+            else
+                window.Close();
+
+            progress = false;
         }
 
         public void StatsWindow(object sender, RoutedEventArgs e)

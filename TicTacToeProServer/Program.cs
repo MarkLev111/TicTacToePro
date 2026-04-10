@@ -23,7 +23,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = key,
 
-        ValidateIssuer = true,
+        ValidateIssuer = false,
         ValidateAudience = false,
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero // убираем погрешность
@@ -46,21 +46,25 @@ builder.Services.AddAuthentication(options =>
 
         OnMessageReceived = context =>
         {
+            // 1. Пытаемся взять из Query (стандарт SignalR для сокетов)
             var accessToken = context.Request.Query["access_token"];
 
+            // 2. Если в Query пусто, лезем в заголовки (стандарт для Negotiate/HTTP)
             if (string.IsNullOrEmpty(accessToken))
             {
                 var authHeader = context.Request.Headers["Authorization"].ToString();
                 if (authHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
                 {
                     accessToken = authHeader.Substring("Bearer ".Length).Trim();
-                    context.Token = accessToken;
                 }
             }
-            else
+
+            // 3. Если хоть где-то нашли — отдаем системе
+            if (!string.IsNullOrEmpty(accessToken))
             {
                 context.Token = accessToken;
             }
+
             return Task.CompletedTask;
         }
     };

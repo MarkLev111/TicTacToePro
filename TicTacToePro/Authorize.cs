@@ -1,4 +1,5 @@
 ﻿using CredentialManagement;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
@@ -67,7 +68,6 @@ namespace TicTacToePro
 
         private static bool IsTokenValid(string token)
         {
-            return true;
             try
             {
                 var handler = new JwtSecurityTokenHandler();
@@ -80,11 +80,11 @@ namespace TicTacToePro
             }
         }
 
-        internal static async void MainWindowConnect(MainWindow window)
+        internal static async Task<bool> MainWindowConnect(MainWindow window)
         {
             window.connection = Connection(); // ссылка
             ConnectionOn(window.connection, window); // УШИ КОННЕКТА
-            await Connect(window.connection, window);
+            return await Connect(window.connection, window);
         }
 
         internal static async Task LoginRegister(UserData data, Window window) // чисто на логин и регу
@@ -120,7 +120,7 @@ namespace TicTacToePro
         {
             HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
 
-            connectionBuilder.WithUrl("https://localhost:7224/gamehub", options =>
+            connectionBuilder.WithUrl("http://localhost:5195/gamehub", options =>
             {
                 options.AccessTokenProvider = () =>
                 {
@@ -185,23 +185,26 @@ namespace TicTacToePro
             });
         }
 
-        internal static async Task Connect(HubConnection connection, Window window)
+        internal static async Task<bool> Connect(HubConnection connection, Window window)
         {
             try
             {
                 await connection.StartAsync();
+                return true;
             }
             catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized) // 401
             {
                 MessageBox.Show("Вы не авторизованы для игры по сети", "TicTacToePro");
                 if (window is MainWindow)
                     window.Close();
+                return false;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Не удалось подключиться к серверу.", "TicTacToePro");
                 if (window is MainWindow)
                     window.Close();
+                return false;
             }
         }
 

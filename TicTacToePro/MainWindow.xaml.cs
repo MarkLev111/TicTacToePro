@@ -207,7 +207,7 @@ namespace TicTacToePro
             }
         }
 
-        public void GameResultAction(PostGameAction action)
+        public async void GameResultAction(PostGameAction action)
         {
             time = new System.Timers.Timer(1000);
             switch (action)
@@ -215,6 +215,11 @@ namespace TicTacToePro
                 case (PostGameAction.NewGame): // сделать параметр Multiplayer / Singleplayer
                     if (this.game is MultiplayerGame)
                     {
+                        bool connect = await Authorize.MainWindowConnect(this);
+                        if (connect)
+                            this.Show();
+                        else
+                            this.Close();
                         Multiplayer();
                         return;
                     }

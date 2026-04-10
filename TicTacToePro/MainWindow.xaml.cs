@@ -240,7 +240,7 @@ namespace TicTacToePro
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            if (buttons != null)
+            if (!Application.Current.Windows.OfType<Menu>().Any())
             {
                 Menu menu = new Menu();
                 menu.Show();

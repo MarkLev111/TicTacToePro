@@ -4,12 +4,28 @@
         Title="StatsWindow" Height="450" Width="800"
         WindowStartupLocation="CenterScreen">
     <Grid>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock x:Name="Games" FontSize="32" FontWeight="Bold"/>
-            <TextBlock x:Name="X" FontSize="32" FontWeight="Bold"/>
-            <TextBlock x:Name="O" FontSize="32" FontWeight="Bold"/>
-            <TextBlock x:Name="Draw" FontSize="32" FontWeight="Bold"/>
-            <Button Content="Главное меню" FontSize="18" Click="Menu_Click" Margin="20,10"/>
-        </StackPanel>
+        <Grid Margin="0,0,400,0">
+            <TextBlock x:Name="TitleSP" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Text="Локальная игра" Margin="0,75,0,0"/>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock x:Name="Games" FontSize="32" FontWeight="Bold"/>
+                <TextBlock x:Name="X" FontSize="32" FontWeight="Bold"/>
+                <TextBlock x:Name="O" FontSize="32" FontWeight="Bold"/>
+                <TextBlock x:Name="Draw" FontSize="32" FontWeight="Bold"/>
+            </StackPanel>
+        </Grid>
+        <Grid Margin="400,0,0,0">
+            <TextBlock x:Name="TitleMP" FontSize="32" FontWeight="Bold" HorizontalAlignment="Center" Text="Игра по сети" Margin="0,75,0,0"/>
+            <TextBlock x:Name="Error" FontSize="20" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,144,0,-26" Width="400"/>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock x:Name="MPGames" FontSize="32" FontWeight="Bold"/>
+                <TextBlock x:Name="MPWins" FontSize="32" FontWeight="Bold"/>
+                <TextBlock x:Name="MPLoses" FontSize="32" FontWeight="Bold"/>
+                <TextBlock x:Name="MPDraw" FontSize="32" FontWeight="Bold"/>
+            </StackPanel>
+        </Grid>
+        <Grid>
+            <Button Content="Главное меню" FontSize="18" Click="Menu_Click" Margin="285,359,285,45"/>
+        </Grid>
     </Grid>
+
 </Window>

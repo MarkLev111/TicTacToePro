@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using System.Collections.Concurrent;
-using TicTacToePro.Shared;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
+using System.Collections.Concurrent;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Authorization;
+using TicTacToePro.Shared;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TicTacToeProServer
 {
@@ -102,6 +103,8 @@ namespace TicTacToeProServer
 
                 if (result != '.')
                 {
+                    await WriteStats(game, result);
+
                     DisconnectedAction action = DisconnectedAction.Normal;
                     await Clients.Group($"{game.X.User?.Identity?.Name}{game.O.User?.Identity?.Name}").SendAsync("EndGame", action, result);
                     await EndGame(game);
@@ -131,7 +134,14 @@ namespace TicTacToeProServer
             }
             else if (playersInGame.TryGetValue(Context, out game)) // при окончании игры я удаляю в EndGame игру. если тип отключился сам, игра останется, второму придёт завершение
             {
+                char result = 'D';
+                if (Context == game.X)
+                    result = 'O';
+                else
+                    result = 'X';
+
                 DisconnectedAction action = DisconnectedAction.Disconnect;
+                await WriteStats(game, result);
                 await Clients.Group($"{game.X.User?.Identity?.Name}{game.O.User?.Identity?.Name}").SendAsync("EndGame", action, 'D'); // ОТПРАВИТЬ ЕНАМ, ЧТО ИГРА БЫЛА ЗАВЕРШЕНА ВЫХОДОМ СОПЕРНИКА
                 await EndGame(game); // мне НЕ нужно полное удаление игры, уже запущен метод дисконнекта
 
@@ -139,6 +149,37 @@ namespace TicTacToeProServer
             }
 
             await base.OnDisconnectedAsync(exception);
+        }
+
+        private async Task WriteStats(Game game, char result)
+        {
+            var playerX = await dbContext.Users.Include(u => u.stats).FirstOrDefaultAsync(u => u.username == game.X.User.Identity.Name);
+            var playerO = await dbContext.Users.Include(u => u.stats).FirstOrDefaultAsync(u => u.username == game.O.User.Identity.Name);
+
+            playerX.stats.games++;
+            playerO.stats.games++;
+
+            if (result == 'X')
+            {
+                playerX.stats.wins++;
+                playerO.stats.loses++;
+            }
+            else if (result == 'O')
+            {
+                playerO.stats.wins++;
+                playerX.stats.loses++;
+            }
+            else if (result == 'N')
+            {
+                playerX.stats.draws++;
+                playerO.stats.draws++;
+            }
+            else
+            {
+                logger.LogInformation("Произошла ошибка обновления статистики в игре.");
+            }
+
+            await dbContext.SaveChangesAsync();
         }
     }
 }

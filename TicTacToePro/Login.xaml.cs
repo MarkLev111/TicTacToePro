@@ -31,7 +31,7 @@ namespace TicTacToePro
                 progress = false;
                 return;
             }
-            UserData data = new UserData(null, this.LoginText.Text, this.PasswordText.Text);
+            UserData data = new UserData(null, this.LoginText.Text, this.PasswordText.Text, new MultiplayerStats ());
             Authorize.LoginRegister(data, this);
         }
 

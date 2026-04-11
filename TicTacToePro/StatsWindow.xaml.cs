@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,7 +20,7 @@ namespace TicTacToePro
     /// </summary>
     public partial class StatsWindow : Window
     {
-        public StatsWindow()
+        public StatsWindow(MultiplayerStats stats)
         {
             InitializeComponent();
             this.Games.Text = $"Всего игр: {Stats.currentStats?.games}";
@@ -37,10 +38,10 @@ namespace TicTacToePro
             this.O.Text = $"Побед O: {Stats.currentStats?.Owins} ({OwinPercent}%)";
             this.Draw.Text = $"Ничейных игр: {Stats.currentStats?.draws} ({drawPercent}%)";
 
-            MultiplayerStats stats = Authorize.GetStats(this).Result;
             if (!string.IsNullOrEmpty(stats.errorMessage))
             {
-                this.Error.Text = stats.errorMessage;
+                this.ErrorText.Text = stats.errorMessage;
+                this.ErrorText.Visibility = Visibility.Visible;
             }
             else
             {
@@ -54,16 +55,21 @@ namespace TicTacToePro
                     MPlosePercent = stats.loses * 100 / stats.games;
                     MPdrawPercent = stats.draws * 100 / stats.games;
                 }
-                this.X.Text = $"Побед: {stats.wins} ({MPwinPercent}%)";
-                this.O.Text = $"Поражений {stats.loses} ({MPlosePercent}%)";
-                this.Draw.Text = $"Ничейных игр: {stats.draws} ({MPdrawPercent}%)";
+                this.MPWins.Text = $"Побед: {stats.wins} ({MPwinPercent}%)";
+                this.MPLoses.Text = $"Поражений {stats.loses} ({MPlosePercent}%)";
+                this.MPDraw.Text = $"Ничейных игр: {stats.draws} ({MPdrawPercent}%)";
             }
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            Menu menu = new Menu();
+            menu.Show();
+            base.OnClosing(e);
         }
 
         private void Menu_Click(object sender, RoutedEventArgs e)
         {
-            Menu menu = new Menu();
-            menu.Show();
             this.Close();
         }
     }

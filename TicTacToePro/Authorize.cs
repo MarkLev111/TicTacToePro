@@ -233,11 +233,15 @@ namespace TicTacToePro
             try
             {
                 var response = await httpClient.GetAsync("https://localhost:7224/api/auth/stats");
-                if (response.IsSuccessStatusCode)
+                if (response.IsSuccessStatusCode || response.StatusCode == System.Net.HttpStatusCode.NotFound)
                     stats = await response.Content.ReadFromJsonAsync<MultiplayerStats>();
                 else
                     stats = new MultiplayerStats(await response.Content.ReadAsStringAsync() ?? "Неизвестная ошибка");
             }
+            //catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound) // 404
+            //{
+            //    stats = new MultiplayerStats("Игрок с таким никнеймом не существует.");
+            //}
             catch
             {
                 stats = new MultiplayerStats("При установке соединения с сервером произошла непредвиденная ошибка");

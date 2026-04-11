@@ -101,6 +101,10 @@ namespace TicTacToeProServer
                 return NotFound(stats);
             }
             var user = await dbContext.Users.Include(u => u.stats).FirstOrDefaultAsync(u => u.username == username);
+            if (user == null)
+            {
+                return NotFound(new MultiplayerStats("Игрок с таким никнеймом не существует."));
+            }
             return Ok(user?.stats);
         }
     }

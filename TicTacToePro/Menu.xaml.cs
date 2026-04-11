@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using TicTacToePro.Shared;
 
 namespace TicTacToePro
 {
@@ -28,6 +29,9 @@ namespace TicTacToePro
 
         public void Singleplayer(object sender, RoutedEventArgs e)
         {
+            if (progress)
+                return;
+            progress = true;
             MainWindow window = new MainWindow();
             window.Show();
             this.Close();
@@ -46,13 +50,16 @@ namespace TicTacToePro
                 window.Show();
             else
                 window.Close();
-
-            progress = false;
         }
 
-        public void StatsWindow(object sender, RoutedEventArgs e)
+        public async void StatsWindow(object sender, RoutedEventArgs e)
         {
-            StatsWindow window = new StatsWindow();
+            if (progress)
+                return;
+            progress = true;
+            MultiplayerStats stats = await Authorize.GetStats(this);
+
+            StatsWindow window = new StatsWindow(stats);
             window.Show();
             this.Close();
         }

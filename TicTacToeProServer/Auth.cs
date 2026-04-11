@@ -95,6 +95,11 @@ namespace TicTacToeProServer
         public async Task<IActionResult> GetStats()
         {
             string username = User.Identity.Name;
+            if (string.IsNullOrEmpty(username))
+            {
+                MultiplayerStats stats = new MultiplayerStats("Пользователь с таким микнеймом не был найден. Попробуйте перезайти в аккаунт.");
+                return NotFound(stats);
+            }
             var user = await dbContext.Users.Include(u => u.stats).FirstOrDefaultAsync(u => u.username == username);
             return Ok(user?.stats);
         }

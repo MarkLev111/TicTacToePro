@@ -5,7 +5,7 @@ namespace TicTacToePro.Shared
 {
     public class MultiplayerStats
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public int games { get; set; }
         public int wins { get; set; }
         public int loses { get; set; }
@@ -19,19 +19,6 @@ namespace TicTacToePro.Shared
             this.wins = wins;
             this.loses = loses;
             this.draws = draws;
-        }
-
-        public void SetStats(MultiplayerStats stats)
-        {
-            this.games = stats.games;
-            this.wins = stats.wins;
-            this.loses = stats.loses;
-            this.draws = stats.draws;
-        }
-
-        public MultiplayerStats(bool status, MultiplayerStats stats)
-        {
-            SetStats(stats);
         }
 
         public MultiplayerStats(string serverMessage)

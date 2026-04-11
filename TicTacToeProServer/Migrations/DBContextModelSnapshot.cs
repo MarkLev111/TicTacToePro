@@ -21,6 +21,38 @@ namespace TicTacToeProServer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("TicTacToePro.Shared.MultiplayerStats", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("draws")
+                        .HasColumnType("int");
+
+                    b.Property<int>("games")
+                        .HasColumnType("int");
+
+                    b.Property<int>("loses")
+                        .HasColumnType("int");
+
+                    b.Property<int>("wins")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.ToTable("Stats");
+                });
+
             modelBuilder.Entity("TicTacToePro.Shared.UserData", b =>
                 {
                     b.Property<int>("Id")
@@ -30,7 +62,6 @@ namespace TicTacToeProServer.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("password")
@@ -44,12 +75,27 @@ namespace TicTacToeProServer.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[email] IS NOT NULL");
 
                     b.HasIndex("username")
                         .IsUnique();
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("TicTacToePro.Shared.MultiplayerStats", b =>
+                {
+                    b.HasOne("TicTacToePro.Shared.UserData", null)
+                        .WithOne("stats")
+                        .HasForeignKey("TicTacToePro.Shared.MultiplayerStats", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("TicTacToePro.Shared.UserData", b =>
+                {
+                    b.Navigation("stats")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

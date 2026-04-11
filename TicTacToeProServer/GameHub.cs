@@ -176,7 +176,7 @@ namespace TicTacToeProServer
             }
             else
             {
-                logger.LogInformation("Произошла ошибка обновления статистики в игре.");
+                logger.LogInformation($"Произошла ошибка обновления статистики в игре {game.X.User?.Identity?.Name} / {game.O.User?.Identity?.Name} ({result})");
             }
 
             await dbContext.SaveChangesAsync();

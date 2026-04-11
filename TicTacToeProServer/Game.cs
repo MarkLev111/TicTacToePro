@@ -9,8 +9,8 @@ namespace TicTacToeProServer
 {
     class Game // МБ ПОМЕНЯТЬ ПАБЛИКИ НА ПРАЙВАТЫ
     {
-        public string X { get; }
-        public string O { get; }
+        public HubCallerContext X { get; }
+        public HubCallerContext O { get; }
         public bool XO { get; set; } // true - X, false — O
         public char[,] field { get; set; }
         public char[,] bigField { get; set; }
@@ -22,7 +22,7 @@ namespace TicTacToeProServer
 
         private IHubContext<GameHub> hub;
 
-        public Game(string first, string second, IHubContext<GameHub> hub)
+        public Game(HubCallerContext first, HubCallerContext second, IHubContext<GameHub> hub)
         {
             this.XO = true;
             this.field = new char[9, 9];
@@ -44,9 +44,9 @@ namespace TicTacToeProServer
             time.Elapsed += OnTimerTick;
         }
 
-        public char Move(string id, int row, int column)
+        public char Move(HubCallerContext player, int row, int column)
         {
-            if (!CheckMove(id))
+            if (!CheckMove(player))
                 return '-';
 
             int bigFieldPos = BigFieldPos(row, column); // то, в какую большую клетку поставили только что
@@ -86,11 +86,11 @@ namespace TicTacToeProServer
             return '.'; // ИГРАЕМ ДАЛЬШЕ
         }
 
-        public bool CheckMove(string id) // проверка законности хода
+        public bool CheckMove(HubCallerContext player) // проверка законности хода
         {
-            if (id == this.X && XO)
+            if (player == this.X && XO)
                 return true;
-            else if (id == this.O && !XO)
+            else if (player == this.O && !XO)
                 return true;
             else
                 return false;

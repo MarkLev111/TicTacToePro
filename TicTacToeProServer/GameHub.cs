@@ -129,7 +129,7 @@ namespace TicTacToeProServer
 
         public async override Task OnDisconnectedAsync(Exception? exception) // сделать окно закрытия игры, когда типа просто отключило от сервера
         {
-            logger.LogInformation($"> Разорвано подключение: {Context.ConnectionId}");
+            logger.LogInformation($"> Разорвано подключение: {Context.User.Identity.Name}");
 
             Game game = null;
             if (playersInQueue.Contains(Context))

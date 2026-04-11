@@ -5,16 +5,15 @@ namespace TicTacToePro.Shared
 {
     public class MultiplayerStats
     {
+        public string Id { get; set; }
         public int games { get; set; }
         public int wins { get; set; }
         public int loses { get; set; }
         public int draws { get; set; }
         [NotMapped]
-        public bool isLoaded { get; set; } = false;
-        [NotMapped]
         public string errorMessage { get; set; } = string.Empty;
 
-        public MultiplayerStats(string username, int games, int wins, int loses, int draws) 
+        public MultiplayerStats(int games, int wins, int loses, int draws) 
         { 
             this.games = games;
             this.wins = wins;
@@ -39,5 +38,7 @@ namespace TicTacToePro.Shared
         {
             errorMessage = serverMessage;
         }
+
+        public MultiplayerStats() { }
     }
 }

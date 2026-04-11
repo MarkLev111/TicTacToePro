@@ -38,20 +38,13 @@ namespace TicTacToeProServer
         {
             string id = Context.ConnectionId;
 
-            //if (Context.User.Identity.IsAuthenticated)
-            //{
-                string username = Context.User.Identity.Name;
-                logger.LogInformation($"> {username} вошёл в игру");
+            string username = Context.User.Identity.Name;
+            logger.LogInformation($"> {username} вошёл в игру");
 
-                playersInQueue.Add(Context);
+            playersInQueue.Add(Context);
 
-                if (playersInQueue.Count >= 2)
-                    await this.CreateGame();
-            //}
-            //else
-            //{
-                //logger.LogInformation($"> Установление анонимное подключение: {id}");
-            //}
+            if (playersInQueue.Count >= 2)
+                await this.CreateGame();
 
             await base.OnConnectedAsync();
         }

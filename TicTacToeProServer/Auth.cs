@@ -56,6 +56,7 @@ namespace TicTacToeProServer
                     return Unauthorized("Игрок с таким никнеймом уже существует.");
                 else
                 {
+                    data.stats = new MultiplayerStats(0, 0, 0, 0);
                     dbContext.Users.Add(data);
                     await dbContext.SaveChangesAsync();
                 }
@@ -90,10 +91,12 @@ namespace TicTacToeProServer
         }
 
         [Authorize]
-        [HttpPost("stats")] // Полный путь: /api/auth/stats
-        public async Task<IActionResult> GetStats([FromBody] string token)
+        [HttpGet("stats")] // Полный путь: /api/auth/stats
+        public async Task<IActionResult> GetStats()
         {
-            return null;
+            string username = User.Identity.Name;
+            var user = await dbContext.Users.Include(u => u.stats).FirstOrDefaultAsync(u => u.username == username);
+            return Ok(user?.stats);
         }
     }
 }

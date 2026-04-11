@@ -233,7 +233,6 @@ namespace TicTacToePro
             try
             {
                 var response = await httpClient.GetAsync("https://localhost:7224/api/auth/stats");
-
                 if (response.IsSuccessStatusCode)
                     stats = await response.Content.ReadFromJsonAsync<MultiplayerStats>();
                 else

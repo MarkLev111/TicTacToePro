@@ -217,10 +217,34 @@ namespace TicTacToePro
             if (GetToken() == null)
             {
                 MessageBox.Show("Вы не авторизованы для игры по сети", "TicTacToePro");
-                //window.Close();
                 return false;
             }
             return true;
+        }
+
+        internal static async Task<MultiplayerStats> GetStats(Window window)
+        {
+            MultiplayerStats? stats = null;
+            
+            if (!TokenCheck(window))
+                return stats = new MultiplayerStats("Вы не авторизованы для получения статистики игры по сети.");
+
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", GetToken());
+            try
+            {
+                var response = await httpClient.GetAsync("https://localhost:7224/api/auth/stats");
+
+                if (response.IsSuccessStatusCode)
+                    stats = await response.Content.ReadFromJsonAsync<MultiplayerStats>();
+                else
+                    stats = new MultiplayerStats(await response.Content.ReadAsStringAsync() ?? "Неизвестная ошибка");
+            }
+            catch
+            {
+                stats = new MultiplayerStats("При установке соединения с сервером произошла непредвиденная ошибка");
+            }
+
+            return stats;
         }
     }
 }

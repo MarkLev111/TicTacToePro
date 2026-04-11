@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TicTacToePro.Shared;
-using Microsoft.AspNetCore.SignalR;
 
 namespace TicTacToeProServer
 {
@@ -87,6 +87,13 @@ namespace TicTacToeProServer
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        [Authorize]
+        [HttpPost("stats")] // Полный путь: /api/auth/stats
+        public async Task<IActionResult> GetStats([FromBody] string token)
+        {
+            return null;
         }
     }
 }

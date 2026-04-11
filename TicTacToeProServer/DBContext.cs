@@ -6,6 +6,7 @@ namespace TicTacToeProServer
     public class DBContext : DbContext
     {
         public DbSet<UserData> Users { get; set; } = null!;
+        public DbSet<MultiplayerStats> Statistics { get; set; }
 
         public DBContext(DbContextOptions options) : base(options) { }
 

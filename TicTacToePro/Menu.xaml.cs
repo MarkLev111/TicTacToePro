@@ -44,6 +44,12 @@ namespace TicTacToePro
 
             MainWindow window = new MainWindow(true);
             window.ReadyToWork += () => this.Close();
+            if (window.buttons == null)
+            {
+                window.Close();
+                progress = false;
+                return;
+            }
 
             bool connect = await Authorize.MainWindowConnect(window);
             if (connect)

@@ -104,13 +104,13 @@ namespace TicTacToePro
                 }
                 else
                 {
-                    string serverMessage = await response.Content.ReadAsStringAsync() ?? "Неизвестная ошибка";
+                    string serverMessage = await response.Content.ReadAsStringAsync() ?? "Неизвестная ошибка.";
                     MessageBox.Show($"{serverMessage}", "TicTacToePro");
                 }
             }
             catch
             {
-                MessageBox.Show($"При установке соединения с сервером произошла непредвиденная ошибка", "TicTacToePro");
+                MessageBox.Show($"При установке соединения с сервером произошла непредвиденная ошибка.", "TicTacToePro");
             }
             Login.progress = false;
             Register.registerInProgress = false;
@@ -198,7 +198,7 @@ namespace TicTacToePro
             }
             catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized) // 401
             {
-                MessageBox.Show("Вы не авторизованы для игры по сети", "TicTacToePro");
+                MessageBox.Show("Вы не авторизованы для игры по сети.", "TicTacToePro");
                 if (window is MainWindow)
                     window.Close();
                 return false;
@@ -216,7 +216,8 @@ namespace TicTacToePro
         {
             if (GetToken() == null)
             {
-                MessageBox.Show("Вы не авторизованы для игры по сети", "TicTacToePro");
+                if (window is not Menu)
+                    MessageBox.Show("Вы не авторизованы для игры по сети.", "TicTacToePro");
                 return false;
             }
             return true;
@@ -236,7 +237,7 @@ namespace TicTacToePro
                 if (response.IsSuccessStatusCode || response.StatusCode == System.Net.HttpStatusCode.NotFound)
                     stats = await response.Content.ReadFromJsonAsync<MultiplayerStats>();
                 else
-                    stats = new MultiplayerStats(await response.Content.ReadAsStringAsync() ?? "Неизвестная ошибка");
+                    stats = new MultiplayerStats(await response.Content.ReadAsStringAsync() ?? "Неизвестная ошибка.");
             }
             //catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound) // 404
             //{
@@ -244,7 +245,7 @@ namespace TicTacToePro
             //}
             catch
             {
-                stats = new MultiplayerStats("При установке соединения с сервером произошла непредвиденная ошибка");
+                stats = new MultiplayerStats("При установке соединения с сервером произошла непредвиденная ошибка.");
             }
 
             return stats;

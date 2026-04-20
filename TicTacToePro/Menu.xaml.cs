@@ -49,7 +49,10 @@ namespace TicTacToePro
             if (connect)
                 window.Show();
             else
+            {
                 window.Close();
+                progress = false;
+            }
         }
 
         public async void StatsWindow(object sender, RoutedEventArgs e)

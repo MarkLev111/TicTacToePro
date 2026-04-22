@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,6 +26,7 @@ namespace TicTacToePro
                 this.Logout.Content = $"Выйти из аккаунта {Authorize.username}";
                 this.Logout.Visibility = Visibility.Visible;
             }
+            CheckForUpdates();
         }
 
         public void Singleplayer(object sender, RoutedEventArgs e)
@@ -86,6 +88,34 @@ namespace TicTacToePro
             Menu window = new Menu();
             window.Show();
             this.Close();
+        }
+
+        public void Update_Click(object sender, RoutedEventArgs e)
+        {
+            if (App.latestVersion.latestUrl == null) // на всякий
+                return;
+            Task.Run(() =>
+            {
+                try
+                {
+                    Process.Start(new ProcessStartInfo(App.latestVersion.latestUrl) { UseShellExecute = true });
+                }
+                catch
+                {
+                    return;
+                }
+            });
+        }
+
+        private async void CheckForUpdates()
+        {
+            var versionResult = await Authorize.GetLatestVersion();
+            GitHub latest = versionResult;
+            App.latestVersion = latest;
+            if (latest == null)
+                return;
+            if (new Version(App.latestVersion.latestVersion) > App.currentVersion)
+                this.Update.Visibility = Visibility.Visible;
         }
     }
 }

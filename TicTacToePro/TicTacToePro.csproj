@@ -18,6 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="ico\update.png" />
     <None Remove="ico\xo256.ico" />
     <None Remove="ico\xo32.ico" />
   </ItemGroup>
@@ -33,6 +34,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="ico\update.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="ico\xo256.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

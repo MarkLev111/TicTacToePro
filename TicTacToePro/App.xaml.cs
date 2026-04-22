@@ -10,8 +10,8 @@ namespace TicTacToePro
     public partial class App : Application
     {
         public static readonly Version currentVersion = new Version("2.2");
-        private static readonly Task<GitHub> task = Authorize.GetLatestVersion();
-        public static readonly GitHub latestVersion = task.Result;
+        public static GitHub latestVersion = new GitHub();
+        //public static readonly GitHub latestVersion = new GitHub("2.1", "https://github.com/MarkLev111/TicTacToePro/releases/tag/2.1"); // для тестов
     }
 
 }

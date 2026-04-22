@@ -279,16 +279,20 @@ namespace TicTacToePro
         {
             try
             {
-                var response = await httpClient.GetStringAsync("https://api.github.com/repos/marklev111/tictactoepro/releases/latest");
-                var github = JsonSerializer.Deserialize<GitHub>(response);
-
-                Version latest = new Version(github.latestVersion);
-                if (latest > App.currentVersion)
+                using (HttpClient httpClientGitHub = new HttpClient())
                 {
-                    return github;
+                    httpClientGitHub.DefaultRequestHeaders.Add("User-Agent", "TicTacToePro");
+                    var response = await httpClientGitHub.GetStringAsync("https://api.github.com/repos/marklev111/tictactoepro/releases/latest");
+                    var github = JsonSerializer.Deserialize<GitHub>(response);
+
+                    Version latest = new Version(github.latestVersion);
+                    if (latest > App.currentVersion)
+                    {
+                        return github;
+                    }
+                    else
+                        return null;
                 }
-                else
-                    return null;
             }
             catch
             {

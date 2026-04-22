@@ -6,7 +6,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
             <Button Name="Login" Content="Авторизоваться" Click="Login_Click" Margin="20,10,20,0" Visibility="Visible" />
@@ -17,5 +17,13 @@
             <Button Content="Игра по сети" Click="Multiplayer" Margin="20,10"/>
             <Button Content="Статистика" Click="StatsWindow" Margin="20,10"/>
         </StackPanel>
+        <Button Name="Update" Click="Update_Click" Grid.Row="1" Cursor="Hand" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,5,5" ToolTip="Доступно обновление! Нажмите для установки" Visibility="Hidden">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <ContentPresenter/>
+                </ControlTemplate>
+            </Button.Template>
+            <Image Source="/ico/update.png" Width="36" Height="36" RenderOptions.BitmapScalingMode="HighQuality"/>
+        </Button>
     </Grid>
 </Window>

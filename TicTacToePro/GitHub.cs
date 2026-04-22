@@ -14,5 +14,10 @@ namespace TicTacToePro
         public string latestUrl { get; set; }
 
         public GitHub() { }
+        public GitHub(string latestVersion, string latestUrl)
+        {
+            this.latestVersion = latestVersion;
+            this.latestUrl = latestUrl;
+        }
     }
 }

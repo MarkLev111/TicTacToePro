@@ -9,7 +9,9 @@ namespace TicTacToePro
     /// </summary>
     public partial class App : Application
     {
-        public const string CurrentVersion = "2.2";
+        public static readonly Version currentVersion = new Version("2.2");
+        private static readonly Task<GitHub> task = Authorize.GetLatestVersion();
+        public static readonly GitHub latestVersion = task.Result;
     }
 
 }

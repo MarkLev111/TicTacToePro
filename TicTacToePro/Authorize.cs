@@ -1,10 +1,12 @@
 ﻿using CredentialManagement;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
+using System.Collections;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Threading;
 using TicTacToePro.Shared;
@@ -271,6 +273,27 @@ namespace TicTacToePro
             }
 
             return stats;
+        }
+
+        internal static async Task<GitHub> GetLatestVersion()
+        {
+            try
+            {
+                var response = await httpClient.GetStringAsync("https://api.github.com/repos/marklev111/tictactoepro/releases/latest");
+                var github = JsonSerializer.Deserialize<GitHub>(response);
+
+                Version latest = new Version(github.latestVersion);
+                if (latest > App.currentVersion)
+                {
+                    return github;
+                }
+                else
+                    return null;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

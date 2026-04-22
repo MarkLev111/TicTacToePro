@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TicTacToePro.Shared;
 
 namespace TicTacToePro
 {
@@ -23,6 +24,18 @@ namespace TicTacToePro
                 this.nextMove = -1;
             else
                 this.nextMove = -2; // Ход соперника
+        }
+
+        public MultiplayerGame(ReconnectionData data)
+        {
+            this.XO = data.XO;
+            this.field = data.field;
+            this.bigField = data.bigField;
+            this.nextMove = data.nextMove;
+            if (nextMove == -2)
+                this.myTurn = !XO;
+            else
+                this.myTurn = XO;
         }
 
         // нужно, чтобы срабатывали местные массивы

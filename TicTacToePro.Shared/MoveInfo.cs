@@ -22,6 +22,13 @@
             this.bigFieldPos = bigFieldPos;
             this.bigFieldChange = bigFieldChange;
         }
+        //public MoveInfo(char XO) // чисто для реконнекта на начальной стадии
+        //{
+        //    if (XO == 'X')
+        //        nextMove = -1;
+        //    else
+        //        nextMove = -2;
+        //}
         public MoveInfo() { } // гемини сказал поставить конструктор без параметров
     }
 }

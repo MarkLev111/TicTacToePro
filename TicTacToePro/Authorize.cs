@@ -187,6 +187,21 @@ namespace TicTacToePro
             {
                 Authorize.SaveToken(token);
             });
+
+            connection.On("CheckConnection", () =>
+            {
+                return true;
+            });
+
+            connection.On<ReconnectionData>("Reconnection", (data) =>
+            {
+                window.Dispatcher.Invoke(() =>
+                {
+                    window.game = new MultiplayerGame(data);
+                    window.WindowTitle();
+                    window.UpdateUI(window.game);
+                });
+            });
         }
 
         internal static async Task<bool> Connect(HubConnection connection, Window window)
@@ -199,6 +214,13 @@ namespace TicTacToePro
             catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Unauthorized) // 401
             {
                 MessageBox.Show("Вы не авторизованы для игры по сети.", "TicTacToePro");
+                if (window is MainWindow)
+                    window.Close();
+                return false;
+            }
+            catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Forbidden) // 403
+            {
+                MessageBox.Show("Вы уже находитесь в активной игре или в очереди.", "TicTacToePro");
                 if (window is MainWindow)
                     window.Close();
                 return false;

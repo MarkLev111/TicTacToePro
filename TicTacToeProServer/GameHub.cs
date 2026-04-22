@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Concurrent;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,12 +12,13 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TicTacToeProServer
 {
-    [Authorize] // он вообще не пустит в класс по 401
-    class GameHub : Hub // заимствование класса из сигнала
+    [Authorize(Policy = "OnlyNewPlayers")] // он вообще не пустит в класс по 401 или если в игре
+    public class GameHub : Hub // заимствование класса из сигнала
     // любой публичный метод автоматом ухо
     {
-        private static List<HubCallerContext> playersInQueue = new List<HubCallerContext>(); // мб заменить на ConcurrentQueue
-        private static ConcurrentDictionary<HubCallerContext, Game> playersInGame = new ConcurrentDictionary<HubCallerContext, Game>();
+        internal static List<HubCallerContext> playersInQueue = new List<HubCallerContext>(); // мб заменить на ConcurrentQueue
+        internal static ConcurrentDictionary<HubCallerContext, Game> playersInGame = new ConcurrentDictionary<HubCallerContext, Game>();
+        internal static List<string> reconnectionList = new List<string>(); // те, кто реконнектятся, автоматом попадают сюда
 
         //private static List<Game> activeGames = new List<Game>(); // когда будет несколько игр, сюда буду их складывать
         // понять, надо ли оно вообще, если у меня есть playersInGame
@@ -35,17 +37,30 @@ namespace TicTacToeProServer
         }
 
         public override async Task OnConnectedAsync()
-            // если тип будет играть сам против себя? проверить такое несовпадение !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         {
             string id = Context.ConnectionId;
 
             string username = Context.User.Identity.Name;
-            logger.LogInformation($"> {username} вошёл в игру");
+            if (reconnectionList.Contains(username))
+            {
+                logger.LogInformation($"> {username} переподключился");
 
-            playersInQueue.Add(Context);
+                Game game = playersInGame.Values.FirstOrDefault(g => g.X.User.Identity.Name == username || g.O.User.Identity.Name == username, null);
+                if (game.X.User.Identity.Name == username)
+                    game.X = Context;
+                else
+                    game.O = Context;
+                await RestoreGame(Context);
+            }
+            else
+            {
+                logger.LogInformation($"> {username} вошёл в игру");
 
-            if (playersInQueue.Count >= 2)
-                await this.CreateGame();
+                playersInQueue.Add(Context);
+
+                if (playersInQueue.Count >= 2)
+                    await this.CreateGame();
+            }
 
             await base.OnConnectedAsync();
         }
@@ -97,6 +112,7 @@ namespace TicTacToeProServer
             {
                 int bigFieldPos = game.BigFieldPos(row, column);
                 MoveInfo data = new MoveInfo(row, column, game.field[row, column], game.nextMove, result, bigFieldPos, game.bigField[bigFieldPos / 10, bigFieldPos % 10]);
+                game.lastMove = data;
                 await Clients.Group($"{game.X.User?.Identity?.Name}{game.O.User?.Identity?.Name}").SendAsync("Move", data);
 
                 logger.LogInformation($"> В игру {game.X.User?.Identity?.Name} / {game.O.User?.Identity?.Name} отправлен корректный ход {row},{column}");
@@ -180,6 +196,48 @@ namespace TicTacToeProServer
             }
 
             await dbContext.SaveChangesAsync();
+        }
+
+        public static async Task<bool> CheckConnection(IHubContext<GameHub> hubContext, HubCallerContext user)
+        {
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                return await hubContext.Clients.Client(user.ConnectionId).InvokeAsync<bool>("CheckConnection", cts.Token);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private async Task RestoreGame(HubCallerContext Context)
+        {
+            string username = Context.User.Identity.Name;
+
+            Game game = playersInGame.Values.FirstOrDefault(g => g.X.User.Identity.Name == username || g.O.User.Identity.Name == username, null);
+            if (game.X.User.Identity.Name == username)
+                game.X = Context;
+            else
+                game.O = Context;
+
+            bool XO = true;
+            if (game.O == Context)
+                XO = false;
+
+            if (game.lastMove == null) // не было ходов, рисуем базу
+            {
+                await Clients.Client(Context.ConnectionId).SendAsync("CreateGame", XO);
+            }
+            else
+            {
+                int nextMove = -2;
+                if ((game.lastMove.XOToPut == 'X' && XO) || (game.lastMove.XOToPut == 'O' && !XO))
+                    nextMove = game.nextMove;
+                ReconnectionData data = new ReconnectionData(XO, game.field, game.bigField, nextMove);
+                await Clients.Client(Context.ConnectionId).SendAsync("Reconnection", data);
+                logger.LogInformation($"> У игрока {username} восстановлена игра после переподключения");
+            }
         }
     }
 }

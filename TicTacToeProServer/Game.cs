@@ -2,20 +2,22 @@
 using Microsoft.AspNetCore.SignalR;
 using System.Timers;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using TicTacToePro.Shared;
 
 // СЕРВЕРНАЯ ЛОГИКА
 
 namespace TicTacToeProServer
 {
-    class Game // МБ ПОМЕНЯТЬ ПАБЛИКИ НА ПРАЙВАТЫ
+    public class Game // МБ ПОМЕНЯТЬ ПАБЛИКИ НА ПРАЙВАТЫ
     {
-        public HubCallerContext X { get; }
-        public HubCallerContext O { get; }
+        public HubCallerContext X { get; set; } // ЕСЛИ ИНТЕРНЕТ МОРГНУЛ - ВСЁ ПРОПАЛО
+        public HubCallerContext O { get; set; }
         public bool XO { get; set; } // true - X, false — O
         public char[,] field { get; set; }
         public char[,] bigField { get; set; }
         private int fieldsClosed { get; set; }
         public int nextMove { get; set; }
+        public MoveInfo lastMove { get; set; } = null;
 
         public System.Timers.Timer time = new System.Timers.Timer(1000);
         private int seconds = 0;

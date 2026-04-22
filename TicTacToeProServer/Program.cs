@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TicTacToeProServer;
 
@@ -68,6 +69,14 @@ builder.Services.AddAuthentication(options =>
             return Task.CompletedTask;
         }
     };
+});
+
+builder.Services.AddSingleton<IAuthorizationHandler, InGameHandler>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("OnlyNewPlayers", policy =>
+        policy.Requirements.Add(new NotInGameRequirement()));
 });
 
 builder.Services.AddCors(options => {

@@ -81,10 +81,8 @@ namespace TicTacToePro
             int row = pos.Item1;
             int col = pos.Item2;
 
-
             if (connection == null) // СИНГЛ ПЛЕЕР
             {
-
                 // Передаем ход в класс логики
                 char result = game.Move(row, col);
                 if (result == '-')

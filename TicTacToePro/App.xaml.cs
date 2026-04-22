@@ -9,7 +9,7 @@ namespace TicTacToePro
     /// </summary>
     public partial class App : Application
     {
-
+        public const string CurrentVersion = "2.2";
     }
 
 }

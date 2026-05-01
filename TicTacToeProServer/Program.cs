@@ -9,6 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSignalR();
 
+builder.Services.AddRazorPages();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromDays(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 builder.Services.AddControllers();
 
 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("H76?7w6eh7HGE!23w6h7&6@6pWt7@6yw87t"));
@@ -103,6 +112,12 @@ var app = builder.Build();
 
 app.UseCors();
 
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.UseSession();
+
 app.UseAuthentication();
 
 app.UseAuthorization();
@@ -110,6 +125,8 @@ app.UseAuthorization();
 app.MapHub<GameHub>("/gamehub");
 
 app.MapControllers();
+
+app.MapRazorPages();
 
 Console.WriteLine("Сервер запущен");
 

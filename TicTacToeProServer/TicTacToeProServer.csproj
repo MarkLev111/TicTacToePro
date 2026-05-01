@@ -25,4 +25,9 @@
     <ProjectReference Include="..\TicTacToePro.Shared\TicTacToePro.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\css\Login.css" />
+    <None Include="wwwroot\js\login.js" />
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,34 @@
+﻿@page
+@model TicTacToeProServer.Pages.LoginModel
+@{
+    ViewData["Title"] = "Login";
+}
+@using Microsoft.AspNetCore.Http
+
+<head>
+    <script src="~/js/login.js"></script>
+    <link rel="stylesheet" href="~/css/login.css">
+</head>
+
+<body>
+    <h1 class="title">Админ-панель</h1>
+    <div class="main-center-container">
+        <form name="logform" method="post" onsubmit="return validateLoginForm()" onreset="resetForm();" class="box">
+            <div class="box">
+                <label for="log_username" class="label">Никнейм</label>
+                <input type="text" asp-for="logUsername" id="log_username" maxlength="50" placeholder="email@gmail.com" oninput="checkUsername()" />
+                <span class="text-danger" id="log_errorUsername"></span>
+            </div>
+            <div class="box">
+                <label for="log_password" class="label">Пароль</label>
+                <input type="password" asp-for="logPassword" id="log_password" min="1" maxlength="50" placeholder="Password" oninput="checkPassword()" />
+                <span class="text-danger" id="log_errorPassword"></span>
+            </div>
+            <div class="box">
+                <button type="submit" name="submit" value="Login">Авторизироваться</button>
+                <span class="text-danger">@Model.message</span>
+            </div>
+            @Html.AntiForgeryToken()
+        </form>
+    </div>
+</body>

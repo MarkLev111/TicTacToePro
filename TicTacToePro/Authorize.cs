@@ -18,8 +18,8 @@ namespace TicTacToePro
         internal static string name = "TicTacToePro";
         internal static string username { get; set; } = GetUsernameFromToken(GetToken());
         internal static readonly HttpClient httpClient = new HttpClient();
-        //internal static readonly string ip = "https://localhost:7224/";
-        internal static readonly string ip = "https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/";
+        internal static readonly string ip = "https://localhost:7224/";
+        //internal static readonly string ip = "https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/";
         internal static void SaveToken(string token) // когда сервер передаёт токен, вшиваем его в винду с параметрами игры
         {
             using (var cred = new Credential())

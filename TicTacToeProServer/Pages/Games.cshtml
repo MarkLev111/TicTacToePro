@@ -1,0 +1,50 @@
+﻿@page
+@model TicTacToeProServer.Pages.IndexModel
+@{
+    ViewData["Title"] = "Games";
+}
+@using Microsoft.AspNetCore.SignalR;
+@using TicTacToeProServer;
+
+<html>
+    <head>
+        <link rel="stylesheet" href="~/css/adminpage.css" asp-append-version="true">
+    </head>
+
+    <body>
+        <h2>Активные игры:</h2>
+        <div class="box" id="playersTable">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Игрок Х</th>
+                        <th>Игрок O</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider" id="playersTableBody">
+                    @foreach (KeyValuePair<HubCallerContext, Game> player in Model.playersInGame)
+                    {
+                        <tr>
+                            <td>@player.Value.X.User.Identity.Name</td>
+                            <td>@player.Value.O.User.Identity.Name</td>
+                            @{
+                                Model.RemoveGame(player.Value);
+                            }
+                        </tr>
+                    }
+                </tbody>
+                <tfoot class="table-group-divider">
+                    <td class="table table-info" scope="row" colspan="100%" style="text-align:center">
+                        <b>@Model.counter активных игр</b>
+                    </td>
+                </tfoot>
+            </table>
+        </div>
+        <h2>Игроки в очереди:</h2>
+        @foreach (HubCallerContext player in Model.queue)
+        {
+            @player.User.Identity.Name
+        }
+    </body>
+
+</html>

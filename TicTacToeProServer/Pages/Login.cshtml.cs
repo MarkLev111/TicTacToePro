@@ -27,7 +27,7 @@ namespace TicTacToeProServer.Pages
 
         public IActionResult OnGet()
         {
-            if (HttpContext.Session.TryGetValue("LoggedIn", out _))
+            if (HttpContext.Session.GetString("LoggedIn") == "true")
                 return RedirectToPage("/Index");
             return Page();
         }

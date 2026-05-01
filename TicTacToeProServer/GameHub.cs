@@ -16,8 +16,8 @@ namespace TicTacToeProServer
     public class GameHub : Hub // заимствование класса из сигнала
     // любой публичный метод автоматом ухо
     {
-        internal static List<HubCallerContext> playersInQueue = new List<HubCallerContext>(); // мб заменить на ConcurrentQueue
-        internal static ConcurrentDictionary<HubCallerContext, Game> playersInGame = new ConcurrentDictionary<HubCallerContext, Game>();
+        internal static List<HubCallerContext> playersInQueue { get; } = new List<HubCallerContext>(); // мб заменить на ConcurrentQueue
+        internal static ConcurrentDictionary<HubCallerContext, Game> playersInGame { get; } = new ConcurrentDictionary<HubCallerContext, Game>();
         internal static List<string> reconnectionList = new List<string>(); // те, кто реконнектятся, автоматом попадают сюда
 
         //private static List<Game> activeGames = new List<Game>(); // когда будет несколько игр, сюда буду их складывать
@@ -238,6 +238,11 @@ namespace TicTacToeProServer
                 await Clients.Client(Context.ConnectionId).SendAsync("Reconnection", data);
                 logger.LogInformation($"> У игрока {username} восстановлена игра после переподключения");
             }
+        }
+
+        internal static List<KeyValuePair<HubCallerContext, Game>> InGameList()
+        {
+            return playersInGame.ToList();
         }
     }
 }

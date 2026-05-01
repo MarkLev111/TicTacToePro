@@ -126,6 +126,25 @@ app.MapHub<GameHub>("/gamehub");
 
 app.MapControllers();
 
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value.ToLower();
+
+    if (path.StartsWith("/login") || path.StartsWith("/css") || path.StartsWith("/js"))
+    {
+        await next();
+        return;
+    }
+
+    if (context.Session.GetString("LoggedIn") != "true")
+    {
+        context.Response.Redirect("/Login");
+        return;
+    }
+
+    await next();
+});
+
 app.MapRazorPages();
 
 Console.WriteLine("Сервер запущен");

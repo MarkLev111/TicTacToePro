@@ -91,7 +91,13 @@ builder.Services.AddCors(options => {
 var connectionString = builder.Configuration.GetConnectionString("UsersDB"); // БАЗА ДАННЫХ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 builder.Services.AddDbContext<DBContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString, sqlOptions =>
+    { // если база данных уснула, она будет долго пытаться подключиться
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null);
+    }));
 
 var app = builder.Build();
 

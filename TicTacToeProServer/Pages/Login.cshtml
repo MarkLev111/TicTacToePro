@@ -6,22 +6,22 @@
 @using Microsoft.AspNetCore.Http
 
 <head>
-    <script src="~/js/login.js"></script>
-    <link rel="stylesheet" href="~/css/login.css">
+    <script src="~/js/login.js" asp-append-version="true"></script>
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true">
 </head>
 
 <body>
     <h1 class="title">Админ-панель</h1>
     <div class="main-center-container">
-        <form name="logform" method="post" onsubmit="return validateLoginForm()" onreset="resetForm();" class="box">
+        <form method="post" onsubmit="return validateLoginForm()" onreset="resetForm();" class="box">
             <div class="box">
                 <label for="log_username" class="label">Никнейм</label>
-                <input type="text" asp-for="logUsername" id="log_username" maxlength="50" placeholder="email@gmail.com" oninput="checkUsername()" />
+                <input type="text" asp-for="logUsername" id="log_username" name="logUsername" maxlength="50" placeholder="email@gmail.com" oninput="checkUsername()" />
                 <span class="text-danger" id="log_errorUsername"></span>
             </div>
             <div class="box">
                 <label for="log_password" class="label">Пароль</label>
-                <input type="password" asp-for="logPassword" id="log_password" min="1" maxlength="50" placeholder="Password" oninput="checkPassword()" />
+                <input type="password" asp-for="logPassword" id="log_password" name="logPassword" min="1" maxlength="50" placeholder="Password" oninput="checkPassword()" />
                 <span class="text-danger" id="log_errorPassword"></span>
             </div>
             <div class="box">

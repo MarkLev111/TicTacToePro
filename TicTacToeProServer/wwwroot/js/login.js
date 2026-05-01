@@ -1,29 +1,22 @@
 function checkUsername() {
-  const email = document.querySelector("[name='log_username']").value;
+  const email = document.getElementById("log_username").value;
   const errorElement = document.getElementById("log_errorUsername");
   errorElement.innerHTML = "";
 
   if (email === "") {
-    errorElement.innerHTML = "Type in your email";
+    errorElement.innerHTML = "Впишите никнейм";
     return false;
   }
   else { return true; }
 }
 
 function checkPassword() {
-  if (document.querySelector("[name='log_password']") === null) {
-    return false;
-  }
-  const password = document.querySelector("[name='log_password']").value;
+  const password = document.getElementById("log_password").value;
   const errorElement = document.getElementById("log_errorPassword");
   errorElement.innerHTML = "";
 
   if (password === "") {
-    errorElement.innerHTML = "Type in your password";
-    return false;
-  }
-  if (password.length < 6) {
-    errorElement.innerHTML = "Password must be at least 5 characters long";
+    errorElement.innerHTML = "Впишите пароль";
     return false;
   }
   return true;
@@ -41,8 +34,8 @@ function clearForm() {
 }
 
 function validateLoginForm() {
-  let isFormOK = true;
-  isFormOK = checkPassword() && isFormOK;
-  isFormOK = checkEmail() && isFormOK;
-  return isFormOK;
+  //let isFormOK = true;
+  //isFormOK = checkPassword() && isFormOK;
+  //isFormOK = checkEmail() && isFormOK;
+  return checkUsername() && checkPassword();
 }

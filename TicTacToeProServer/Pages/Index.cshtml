@@ -4,5 +4,36 @@
 }
 
 <html>
-    Привет!
+    <body>
+        <h2>Активные игры:</h2>
+        <div class="box">
+            <table>
+                <thead>
+                    <tr>
+                        @foreach (string displayColumn in Model.displayColumns)
+                        {
+                            <th scope="col">@displayColumn</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    @foreach (DataRow row in Model.DataTableUsers.Rows)
+                    {
+                        <tr>
+                            @foreach (DataColumn column in Model.DataTableUsers.Columns)
+                            {
+                                <td>@row[column]</td>
+                            }
+                            <td><a asp-page="/Delete" asp-route-deleteId="@row["Id"]">Delete</a></td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot class="table-group-divider">
+                    <td class="table table-info" scope="row" colspan="100%" style="text-align:center">
+                        <b>@Model.DataTableUsers.Rows.Count users</b>
+                    </td>
+                </tfoot>
+            </table>
+        </div>
+    </body>
 </html>

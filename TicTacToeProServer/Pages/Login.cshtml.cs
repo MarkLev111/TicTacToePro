@@ -25,20 +25,29 @@ namespace TicTacToeProServer.Pages
             this.config = config;
         }
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            if (HttpContext.Session.TryGetValue("LoggedIn", out _))
+                return RedirectToPage("/Index");
+            return Page();
         }
 
         public async Task<IActionResult> OnPost()
         {
             if (logUsername != "MarkLev111")
-                return Unauthorized();
+            {
+                message = "Неверный логин или пароль.";
+                return Page();
+            }
             else
             {
                 var user = await dbContext.Users.FirstOrDefaultAsync(u => u.username == logUsername);
                 bool passwordCheck = BCrypt.Net.BCrypt.Verify(logPassword, user.password);
                 if (!passwordCheck)
-                    return Unauthorized();
+                {
+                    message = "Неверный логин или пароль.";
+                    return Page();
+                }
                 HttpContext.Session.SetString("LoggedIn", "true");
                 return RedirectToPage("/index");
             }

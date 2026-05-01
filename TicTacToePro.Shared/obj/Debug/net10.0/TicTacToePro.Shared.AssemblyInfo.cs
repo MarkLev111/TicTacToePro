@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TicTacToePro.Shared")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c1cb128d736dd4e6220ee53ef934a39823819125")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a195d29a124756722d73286a682d079e9b9ec157")]
 [assembly: System.Reflection.AssemblyProductAttribute("TicTacToePro.Shared")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TicTacToePro.Shared")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

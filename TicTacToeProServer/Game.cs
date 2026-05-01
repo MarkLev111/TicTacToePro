@@ -341,7 +341,7 @@ namespace TicTacToeProServer
         private async void OnTimerTick(System.Object? o, ElapsedEventArgs? e)
         {
             this.seconds++;
-            await hub.Clients.Group($"{X}{O}").SendAsync("Timer", seconds);
+            await hub.Clients.Group($"{X.User?.Identity?.Name}{O.User?.Identity?.Name}").SendAsync("Timer", seconds);
         }
 
         public int GetSeconds()

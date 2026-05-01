@@ -18,6 +18,8 @@ namespace TicTacToePro
         internal static string name = "TicTacToePro";
         internal static string username { get; set; } = GetUsernameFromToken(GetToken());
         internal static readonly HttpClient httpClient = new HttpClient();
+        //internal static readonly string ip = "https://localhost:7224/";
+        internal static readonly string ip = "https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/";
         internal static void SaveToken(string token) // когда сервер передаёт токен, вшиваем его в винду с параметрами игры
         {
             using (var cred = new Credential())
@@ -93,7 +95,7 @@ namespace TicTacToePro
         {
             try
             {
-                var response = await httpClient.PostAsJsonAsync("https://localhost:7224/api/auth/login", data);
+                var response = await httpClient.PostAsJsonAsync(ip + "api/auth/login", data);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -122,19 +124,19 @@ namespace TicTacToePro
         {
             HubConnectionBuilder connectionBuilder = new HubConnectionBuilder();
 
-            connectionBuilder.WithUrl("http://localhost:5195/gamehub", options =>
-            {
-                options.AccessTokenProvider = () =>
-                {
-                    string token = GetToken();
-                    return Task.FromResult(token);
-                };
-            }); // сервер локалхост
-
-            //connectionBuilder.WithUrl("https://tictactoepro-a6egbyh8ake9cgdv.israelcentral-01.azurewebsites.net/gamehub", options =>
+            //connectionBuilder.WithUrl("http://localhost:5195/gamehub", options =>
             //{
-            //    options.AccessTokenProvider = () => Task.FromResult(GetToken());
-            //}); // сервер азур
+            //    options.AccessTokenProvider = () =>
+            //    {
+            //        string token = GetToken();
+            //        return Task.FromResult(token);
+            //    };
+            //}); // сервер локалхост
+
+            connectionBuilder.WithUrl(ip + "gamehub", options =>
+            {
+                options.AccessTokenProvider = () => Task.FromResult(GetToken());
+            }); // сервер азур
 
             connectionBuilder.WithAutomaticReconnect();
             HubConnection connection = connectionBuilder.Build();
@@ -257,7 +259,7 @@ namespace TicTacToePro
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", GetToken());
             try
             {
-                var response = await httpClient.GetAsync("https://localhost:7224/api/auth/stats");
+                var response = await httpClient.GetAsync(ip + "api/auth/stats");
                 if (response.IsSuccessStatusCode || response.StatusCode == System.Net.HttpStatusCode.NotFound)
                     stats = await response.Content.ReadFromJsonAsync<MultiplayerStats>();
                 else

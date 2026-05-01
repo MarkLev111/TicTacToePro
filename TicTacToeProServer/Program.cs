@@ -88,7 +88,7 @@ builder.Services.AddCors(options => {
     });
 });
 
-var connectionString = builder.Configuration.GetConnectionString("UsersDB");
+var connectionString = builder.Configuration.GetConnectionString("UsersDB"); // БАЗА ДАННЫХ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 builder.Services.AddDbContext<DBContext>(options =>
     options.UseSqlServer(connectionString));
